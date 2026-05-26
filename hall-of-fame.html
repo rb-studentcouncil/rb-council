@@ -158,7 +158,7 @@
         : escapeHtml(e.name);
       const ig = igHandle(e.igusername);
       const igHtml = ig
-        ? `<a class="ig-link" href="https://www.instagram.com/${encodeURIComponent(ig)}/" target="_blank" rel="noopener">@${escapeHtml(ig)}</a>`
+      ? `<a class="ig-link" href="https://www.instagram.com/${encodeURIComponent(ig)}/" target="_blank" rel="noopener">ig : ${escapeHtml(ig)}</a>`
         : '';
       return `
         <article class="card">
