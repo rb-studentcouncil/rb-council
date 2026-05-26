@@ -22,9 +22,6 @@
   .card .ig-link { display:inline-flex; align-items:center; gap:5px; font-family:var(--head); font-size:13px; font-weight:600; color:var(--pink); margin-top:10px; }
   .card .ig-link:hover { text-decoration:underline; }
   .card .card-foot { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-  .src-badge { font-size:12px; color:var(--grey); margin-bottom:18px; }
-  .src-badge .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--gold); margin-right:6px; vertical-align:middle; }
-  .src-badge.live .dot { background:#2faa5e; }
 </style>
 </head>
 <body>
@@ -54,7 +51,6 @@
 
 <section style="padding-top:8px;">
   <div class="wrap">
-    <div id="srcBadge" class="src-badge reveal" style="display:none;"></div>
     <div class="filter-row reveal" id="filterRow"></div>
     <div class="grid grid-3" id="cardGrid">
       <div class="empty-note">กำลังโหลดข้อมูล…</div>
@@ -87,7 +83,6 @@
 
   const grid = document.getElementById('cardGrid');
   const filterRow = document.getElementById('filterRow');
-  const srcBadge = document.getElementById('srcBadge');
   let allEntries = [];
   let activeCat = 'ทั้งหมด';
 
@@ -190,18 +185,9 @@
     });
   }
 
-  function showBadge(live) {
-    srcBadge.style.display = '';
-    srcBadge.className = 'src-badge reveal in' + (live ? ' live' : '');
-    srcBadge.innerHTML = live
-      ? '<span class="dot"></span>ข้อมูลสด — ดึงจาก Google Sheets'
-      : '<span class="dot"></span>ข้อมูลตัวอย่าง — จากไฟล์ในเว็บ (ยังไม่ได้เชื่อม Google Sheets)';
-  }
-
   function start(entries, categories, live) {
     allEntries = entries;
     buildFilters(categories && categories.length ? categories : deriveCategories(entries));
-    showBadge(live);
     renderCards();
   }
 
@@ -211,7 +197,6 @@
       .then(data => start(Array.isArray(data.entries) ? data.entries : [], data.categories, false))
       .catch(err => {
         filterRow.innerHTML = '';
-        srcBadge.style.display = 'none';
         grid.innerHTML = `
           <div class="load-error">
             <b>โหลดข้อมูล Hall of Fame ไม่สำเร็จ</b>
