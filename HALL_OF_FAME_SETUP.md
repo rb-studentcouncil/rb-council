@@ -74,10 +74,13 @@ name | class | category | award | year | igusername | detail | photo
 > ลำดับคอลัมน์สลับได้ ระบบอ่านตามชื่อหัว ไม่ใช่ตำแหน่ง
 > แต่ "ชื่อหัว" ต้องสะกดตรงตามนี้
 
-**คอลัมน์ `photo`** ใส่ลิงก์รูปได้ 2 แบบ:
-- ไฟล์ใน repo: `images/hall/award-001.jpg` (อัปโหลดรูปขึ้น GitHub ก่อน)
-- URL เต็มจากภายนอก: `https://example.com/image.jpg`
+**คอลัมน์ `photo`** ใส่รูปได้ 3 แบบ:
+- **ชื่อไฟล์เฉยๆ**: `award-001.jpg` ← ระบบเติม `images/hall/` ให้อัตโนมัติ (ง่ายสุด)
+- **path เต็ม**: `images/hall/award-001.jpg`
+- **URL ภายนอก**: `https://example.com/image.jpg`
 - ถ้าไม่มีรูป ปล่อยว่าง ระบบจะใช้ตัวอักษรแรกของชื่อรางวัลเป็น placeholder อัตโนมัติ
+
+ก่อนใช้: อัปโหลดไฟล์รูปขึ้นโฟลเดอร์ `images/hall/` ใน repo ก่อน (push ขึ้น GitHub)
 
 ---
 

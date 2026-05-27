@@ -241,9 +241,15 @@
         ? `<a class="ig-link" href="https://www.instagram.com/${encodeURIComponent(ig)}/" target="_blank" rel="noopener">ig : ${escapeHtml(ig)}</a>`
         : '';
 
-      /* รูปภาพ: รองรับทั้ง path ใน repo (เช่น images/hall/xxx.jpg) และ URL เต็ม
+      /* รูปภาพ: รองรับ 3 รูปแบบ
+         1) ชื่อไฟล์เฉยๆ เช่น "myaward.jpg" → เติม prefix "images/hall/" ให้
+         2) path เต็ม เช่น "images/hall/xxx.jpg" → ใช้ตรงๆ
+         3) URL ภายนอก เช่น "https://..." → ใช้ตรงๆ
          ถ้าไม่มีรูป ใช้ตัวอักษรแรกของชื่อรางวัลเป็น placeholder */
-      const photoUrl = String(e.photo || '').trim();
+      let photoUrl = String(e.photo || '').trim();
+      if (photoUrl && !/^(https?:\/\/|data:|\/|images\/)/i.test(photoUrl)) {
+        photoUrl = 'images/hall/' + photoUrl;
+      }
       const firstChar = String(e.award || e.name || '?').trim().charAt(0) || '?';
       const photoHtml = photoUrl
         ? `<img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(e.award)}" loading="lazy"
