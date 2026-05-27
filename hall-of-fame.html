@@ -19,9 +19,85 @@
   .load-error { background:#FFF1DC; border:1px solid #F0CF94; border-radius:var(--radius); padding:20px 24px; color:var(--gold-deep); font-size:14px; grid-column:1/-1; }
   .load-error b { display:block; margin-bottom:4px; color:var(--charcoal); font-family:var(--head); }
   .load-error code { background:#fff; padding:2px 6px; border-radius:4px; font-size:13px; }
-  .card .ig-link { display:inline-flex; align-items:center; gap:5px; font-family:var(--head); font-size:13px; font-weight:600; color:var(--pink); margin-top:10px; }
-  .card .ig-link:hover { text-decoration:underline; }
-  .card .card-foot { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+
+  /* ===== Hall of Fame card layout: หัวข้อ → รูป → ข้อความ → ปี/IG ===== */
+  .hall-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; grid-auto-rows:1fr; }
+  .hall-card {
+    position:relative; overflow:hidden;
+    background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    display:flex; flex-direction:column;
+    height:100%;
+  }
+  .hall-card:hover {
+    transform:translateY(-6px);
+    box-shadow:0 22px 48px -22px rgba(199,127,26,.45);
+    border-color:var(--gold);
+  }
+  /* (1) หัวข้อด้านบน */
+  .hall-head { padding:18px 20px 12px; }
+  .hall-head .tag {
+    display:inline-block; font-family:var(--head); font-size:11px; font-weight:600;
+    letter-spacing:.5px; text-transform:uppercase;
+    color:var(--gold-deep); background:#FFF1DC;
+    padding:4px 10px; border-radius:999px; margin-bottom:10px;
+  }
+  .hall-head h3 {
+    font-family:var(--head); font-weight:700; font-size:17px; color:var(--charcoal); line-height:1.35;
+    display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical;
+    overflow:hidden;
+    min-height:2.7em;
+  }
+  /* (2) รูป */
+  .hall-photo {
+    position:relative; width:100%; padding-bottom:75%; /* 4:3 */
+    background:linear-gradient(135deg, #FFF1DC, var(--lilac));
+    overflow:hidden;
+  }
+  .hall-photo img,
+  .hall-photo .placeholder {
+    position:absolute; inset:0;
+  }
+  .hall-photo img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:transform .5s ease;
+  }
+  .hall-card:hover .hall-photo img { transform:scale(1.04); }
+  .hall-photo .placeholder {
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-size:64px; color:var(--gold-deep);
+    opacity:.45;
+  }
+  /* (3) ข้อความ */
+  .hall-body { padding:16px 20px 8px; flex:1; }
+  .hall-body .who { font-family:var(--head); font-weight:600; font-size:14px; color:var(--charcoal); margin-bottom:4px; }
+  .hall-body .detail { font-size:13px; color:var(--grey); line-height:1.55; }
+  /* (4) ปี + IG ด้านล่าง */
+  .hall-foot {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px; padding:12px 20px 18px; border-top:1px solid var(--line);
+    margin-top:8px;
+  }
+  .hall-foot .year {
+    font-family:var(--head); font-size:13px; font-weight:600;
+    color:var(--gold-deep);
+  }
+  .hall-foot .ig-link {
+    display:inline-flex; align-items:center; gap:5px;
+    font-family:var(--head); font-size:13px; font-weight:600;
+    color:var(--pink);
+  }
+  .hall-foot .ig-link:hover { color:var(--pink-deep); text-decoration:underline; }
+
+  @media (max-width:880px){ .hall-grid{ grid-template-columns:repeat(2,1fr); gap:14px; } }
+  @media (max-width:560px){
+    .hall-grid{ grid-template-columns:1fr; gap:12px; }
+    .hall-head{ padding:14px 16px 10px; }
+    .hall-body{ padding:12px 16px 6px; }
+    .hall-foot{ padding:10px 16px 14px; }
+    .hall-head h3{ font-size:15px; }
+  }
 </style>
 </head>
 <body>
@@ -51,7 +127,7 @@
 <section style="padding-top:8px;">
   <div class="wrap">
     <div class="filter-row reveal" id="filterRow"></div>
-    <div class="grid grid-3" id="cardGrid">
+    <div class="hall-grid" id="cardGrid">
       <div class="empty-note">กำลังโหลดข้อมูล…</div>
     </div>
     <div style="text-align:center;margin-top:40px;" class="reveal">
@@ -164,19 +240,36 @@
       const igHtml = ig
         ? `<a class="ig-link" href="https://www.instagram.com/${encodeURIComponent(ig)}/" target="_blank" rel="noopener">ig : ${escapeHtml(ig)}</a>`
         : '';
+
+      /* รูปภาพ: รองรับทั้ง path ใน repo (เช่น images/hall/xxx.jpg) และ URL เต็ม
+         ถ้าไม่มีรูป ใช้ตัวอักษรแรกของชื่อรางวัลเป็น placeholder */
+      const photoUrl = String(e.photo || '').trim();
+      const firstChar = String(e.award || e.name || '?').trim().charAt(0) || '?';
+      const photoHtml = photoUrl
+        ? `<img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(e.award)}" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+           <span class="placeholder" style="display:none;">${escapeHtml(firstChar)}</span>`
+        : `<span class="placeholder">${escapeHtml(firstChar)}</span>`;
+
       return `
-        <article class="card">
-          <span class="tag gold">${escapeHtml(e.category)}</span>
-          <h3>${escapeHtml(e.award)}</h3>
-          <p>${who}${e.detail ? '<br>' + escapeHtml(e.detail) : ''}</p>
-          <div class="card-foot">
-            ${e.year ? `<div class="date">${escapeHtml(e.year)}</div>` : '<span></span>'}
-            ${igHtml}
+        <article class="hall-card">
+          <div class="hall-head">
+            <span class="tag">${escapeHtml(e.category)}</span>
+            <h3>${escapeHtml(e.award)}</h3>
+          </div>
+          <div class="hall-photo">${photoHtml}</div>
+          <div class="hall-body">
+            <div class="who">${who}</div>
+            ${e.detail ? `<div class="detail">${escapeHtml(e.detail)}</div>` : ''}
+          </div>
+          <div class="hall-foot">
+            <span class="year">${e.year ? escapeHtml(e.year) : ''}</span>
+            ${igHtml || '<span></span>'}
           </div>
         </article>`;
     }).join('');
 
-    grid.querySelectorAll('.card').forEach(c => c.classList.add('reveal', 'in'));
+    grid.querySelectorAll('.hall-card').forEach(c => c.classList.add('reveal', 'in'));
   }
 
   function buildFilters(categories) {
@@ -231,7 +324,7 @@
 })();
 /*
 git add .
-git commit -m "edit"
+git commit -m "edit hall of fame"
 git push
 */
 </script>
