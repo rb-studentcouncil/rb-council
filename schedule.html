@@ -27,8 +27,23 @@
   .info-box b { font-family:var(--head); color:var(--charcoal); display:block; margin-bottom:4px; }
   .info-box p { font-size:14px; color:var(--ink); margin:0; }
   .other-links { display:flex; gap:12px; flex-wrap:wrap; margin-top:30px; }
-  @media (max-width:700px){ .grade-grid{ grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:480px){ .grade-grid{ grid-template-columns:1fr;} .info-box{flex-direction:column;} }
+  @media (max-width:700px){
+    .grade-grid{ grid-template-columns:repeat(2,1fr); gap:12px; }
+    .grade-card{ padding:16px; }
+    .grade-num{ font-size:30px; }
+    .grade-card h3{ font-size:15px; }
+    .grade-card p{ font-size:12px; margin-bottom:10px; }
+    .grade-card .go{ font-size:13px; }
+  }
+  @media (max-width:480px){
+    .grade-grid{ grid-template-columns:repeat(2,1fr); gap:10px; }
+    .grade-card{ padding:14px; }
+    .grade-num{ font-size:26px; }
+    .grade-card h3{ font-size:14px; }
+    .grade-card p{ font-size:11px; margin-bottom:8px; }
+    .other-links{ gap:8px; margin-top:20px; }
+    .other-links .btn{ padding:10px 14px; font-size:13px; }
+  }
 </style>
 </head>
 <body>
