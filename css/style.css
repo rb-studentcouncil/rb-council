@@ -196,7 +196,7 @@ section { padding: 56px 0; }
 .reveal.in { opacity: 1; transform: none; }
 
 /* ---------- Page header (inner pages) ---------- */
-.page-hero { padding: 56px 0 32px; }
+.page-hero { padding: 28px 0 24px; }
 .page-hero h1 { font-family: var(--display); font-weight: 400; font-size: clamp(30px, 5vw, 50px); color: var(--charcoal); letter-spacing: -.5px; margin-bottom: 14px; }
 .page-hero p { color: var(--grey); font-size: 16px; max-width: 640px; }
 .crumb { font-family: var(--head); font-size: 13px; color: var(--grey); margin-bottom: 18px; }
