@@ -54,7 +54,10 @@
     <div class="grid grid-3" id="cardGrid">
       <div class="empty-note">กำลังโหลดข้อมูล…</div>
     </div>
-    <p style="text-align:center;color:var(--grey);margin-top:34px;font-size:14px;" class="reveal">อยากเสนอชื่อเพื่อนหรือผลงานเข้า Hall of Fame? ส่งเรื่องถึงสภาผ่าน <a href="https://www.instagram.com/rb.spotlight/" target="_blank" style="color:var(--pink-deep);font-weight:600;">@rb.spotlight</a></p>
+    <div style="text-align:center;margin-top:40px;" class="reveal">
+      <p style="color:var(--grey);font-size:15px;margin-bottom:16px;">มีผลงานหรืออยากเสนอชื่อเพื่อนเข้า Hall of Fame?<br>กรอกฟอร์มพร้อมแนบหลักฐาน แล้วสภาจะตรวจสอบก่อนเผยแพร่</p>
+      <a href="https://forms.gle/x8GxQNVREQ3RCJjR7" target="_blank" rel="noopener" class="btn btn-primary">เสนอชื่อเข้า Hall of Fame →</a>
+    </div>
   </div>
 </section>
 
@@ -77,7 +80,7 @@
      วิธีหาลิงก์: ดูในไฟล์ HALL_OF_FAME_SETUP.md
      ถ้าเว้นว่างไว้ ('') เว็บจะใช้ข้อมูลจาก data/hall.json แทน
      ============================================================ */
-  const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRIqamRbAT_n4bKekmiLQJrekVUqt-NZmqMtJmIHkawKIFlWeZAjkH3XheVRGGBx5U3cJxVXAzMNPxb/pub?gid=0&single=true&output=csv';
+  const SHEET_CSV_URL = '';
   /* ============================================================ */
 
   const grid = document.getElementById('cardGrid');
@@ -152,7 +155,7 @@
         : escapeHtml(e.name);
       const ig = igHandle(e.igusername);
       const igHtml = ig
-      ? `<a class="ig-link" href="https://www.instagram.com/${encodeURIComponent(ig)}/" target="_blank" rel="noopener">ig : ${escapeHtml(ig)}</a>`
+        ? `<a class="ig-link" href="https://www.instagram.com/${encodeURIComponent(ig)}/" target="_blank" rel="noopener">ig : ${escapeHtml(ig)}</a>`
         : '';
       return `
         <article class="card">
@@ -184,7 +187,7 @@
     });
   }
 
-  function start(entries, categories, live) {
+  function start(entries, categories) {
     allEntries = entries;
     buildFilters(categories && categories.length ? categories : deriveCategories(entries));
     renderCards();
@@ -193,7 +196,7 @@
   function loadJsonFallback(reason) {
     fetch('data/hall.json')
       .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(data => start(Array.isArray(data.entries) ? data.entries : [], data.categories, false))
+      .then(data => start(Array.isArray(data.entries) ? data.entries : [], data.categories))
       .catch(err => {
         filterRow.innerHTML = '';
         grid.innerHTML = `
@@ -212,7 +215,7 @@
       .then(text => {
         const entries = csvToEntries(text);
         if (!entries.length) throw new Error('ไม่พบข้อมูลในชีต');
-        start(entries, deriveCategories(entries), true);
+        start(entries, deriveCategories(entries));
       })
       .catch(() => loadJsonFallback('ดึง Google Sheets ไม่ได้ ลองใช้ข้อมูลสำรอง:'));
   } else {
