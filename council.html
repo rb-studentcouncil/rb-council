@@ -15,13 +15,14 @@
   }
   .year-btn:hover { border-color:var(--pink); color:var(--pink-deep); }
   .year-btn.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; border-color:transparent; box-shadow:var(--shadow-sm); }
-  .committee-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .committee-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; align-items:stretch; }
   .member-card {
     position:relative; overflow:hidden;
     background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
     box-shadow:var(--shadow-sm);
     transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     display:flex; flex-direction:column;
+    height:100%; /* บังคับให้สูงเท่าใบที่สูงสุดในแถว */
   }
   .member-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); border-color:var(--pink-soft); }
   .member-photo {
