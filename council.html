@@ -21,11 +21,15 @@
     position:relative; overflow:hidden;
     background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
     box-shadow:var(--shadow-sm);
-    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
     display:flex; flex-direction:column;
     height:100%;
   }
-  .member-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); border-color:var(--pink-soft); }
+  .member-card:hover {
+    transform:translateY(-6px);
+    box-shadow:0 22px 48px -22px rgba(98,72,169,.45);
+    border-color:var(--pink);
+  }
   /* รูปใช้ padding-bottom trick (3:4 = 133.33%) เพื่อบังคับสูงเท่ากันเป๊ะทุก browser */
   .member-photo {
     position:relative; width:100%; padding-bottom:133.33%;
@@ -37,14 +41,25 @@
   .member-photo .initials {
     position:absolute; inset:0;
   }
-  .member-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+  .member-photo img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:transform .5s ease;
+  }
+  .member-card:hover .member-photo img { transform:scale(1.06); }
+  /* gradient overlay บางๆ ตอน hover */
+  .member-photo::after {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(180deg, transparent 55%, rgba(36,27,51,.18) 100%);
+    opacity:0; transition:opacity .25s ease;
+  }
+  .member-card:hover .member-photo::after { opacity:1; }
   .member-photo .initials {
     display:flex; align-items:center; justify-content:center;
     font-family:var(--display); font-size:48px; color:var(--pink-deep);
     opacity:.55; letter-spacing:1px;
   }
   .member-body {
-    padding:22px 18px 18px; height:104px; box-sizing:border-box;
+    padding:16px 18px 14px; height:84px; box-sizing:border-box;
     display:flex; flex-direction:column; justify-content:flex-start;
     flex-shrink:0;
   }
@@ -52,23 +67,30 @@
     align-self:flex-start;
     font-family:var(--head); font-size:11px; font-weight:600;
     letter-spacing:.5px; text-transform:uppercase; color:var(--pink-deep);
-    background:var(--pink-soft); padding:4px 10px; border-radius:999px; margin-bottom:8px;
+    background:var(--pink-soft); padding:4px 10px; border-radius:999px; margin-bottom:6px;
+    transition:background .25s ease, color .25s ease;
+  }
+  .member-card:hover .role {
+    background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+    color:#fff;
   }
   .member-card.lead .role { color:#fff; background:linear-gradient(135deg,var(--pink),var(--pink-deep)); }
   .member-card h3 {
     font-family:var(--head); font-weight:700; font-size:16px; color:var(--charcoal); line-height:1.35;
     display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical;
     overflow:hidden;
+    transition:color .25s ease;
   }
+  .member-card:hover h3 { color:var(--pink-deep); }
   @media (max-width:880px){
     .committee-grid{ grid-template-columns:repeat(2,1fr); gap:14px; }
   }
   @media (max-width:480px){
     .committee-grid{ grid-template-columns:repeat(2,1fr); gap:10px; }
-    .member-body{ padding:14px 12px 12px; height:84px; }
+    .member-body{ padding:12px 12px 10px; height:74px; }
     .member-card h3{ font-size:14px; }
     .member-photo .initials{ font-size:38px; }
-    .member-card .role{ font-size:10px; padding:3px 8px; margin-bottom:6px; }
+    .member-card .role{ font-size:10px; padding:3px 8px; margin-bottom:5px; }
   }
 </style>
 </head>
