@@ -15,24 +15,41 @@
   }
   .year-btn:hover { border-color:var(--pink); color:var(--pink-deep); }
   .year-btn.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; border-color:transparent; box-shadow:var(--shadow-sm); }
-  .committee-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .committee-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
   .member-card {
+    position:relative; overflow:hidden;
     background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
-    padding:18px 20px; box-shadow:var(--shadow-sm); transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    box-shadow:var(--shadow-sm);
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    display:flex; flex-direction:column;
   }
   .member-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); border-color:var(--pink-soft); }
+  .member-photo {
+    position:relative; width:100%; aspect-ratio:3/4;
+    background:linear-gradient(135deg, var(--pink-soft), var(--lilac));
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .member-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+  .member-photo .initials {
+    font-family:var(--display); font-size:48px; color:var(--pink-deep);
+    opacity:.55; letter-spacing:1px;
+  }
+  .member-body { padding:14px 16px 16px; }
   .member-card .role {
     display:inline-block; font-family:var(--head); font-size:11px; font-weight:600;
     letter-spacing:.5px; text-transform:uppercase; color:var(--pink-deep);
-    background:var(--pink-soft); padding:4px 10px; border-radius:999px; margin-bottom:10px;
+    background:var(--pink-soft); padding:4px 10px; border-radius:999px; margin-bottom:8px;
   }
   .member-card.lead .role { color:#fff; background:linear-gradient(135deg,var(--pink),var(--pink-deep)); }
-  .member-card h3 { font-family:var(--head); font-weight:700; font-size:17px; color:var(--charcoal); line-height:1.35; }
-  @media (max-width:880px){ .committee-grid{ grid-template-columns:repeat(2,1fr);} }
+  .member-card h3 { font-family:var(--head); font-weight:700; font-size:16px; color:var(--charcoal); line-height:1.35; }
+  @media (max-width:880px){ .committee-grid{ grid-template-columns:repeat(2,1fr); gap:14px; } }
   @media (max-width:480px){
-    .committee-grid{ grid-template-columns:1fr; gap:10px; }
-    .member-card{ padding:14px 16px; }
-    .member-card h3{ font-size:15px; }
+    .committee-grid{ grid-template-columns:repeat(2,1fr); gap:10px; }
+    .member-body{ padding:10px 12px 12px; }
+    .member-card h3{ font-size:14px; }
+    .member-photo .initials{ font-size:38px; }
+    .member-card .role{ font-size:10px; padding:3px 8px; margin-bottom:6px; }
   }
 </style>
 </head>
@@ -61,7 +78,7 @@
   <div class="wrap">
     <div class="crumb reveal"><a href="index.html">หน้าแรก</a> / สภานักเรียน</div>
     <h1 class="reveal">รู้จักสภานักเรียน RB</h1>
-    <p class="reveal">รายชื่อคณะกรรมการสภานักเรียนโรงเรียนราชโบริกานุเคราะห์ — เลือกปีการศึกษาเพื่อดูคณะกรรมการชุดที่ต้องการ</p>
+    <p class="reveal">รายชื่อคณะกรรมการสภานักเรียนโรงเรียนราชโบริกานุเคราะห์</p>
   </div>
 </section>
 
@@ -91,27 +108,30 @@
      เพิ่มปีใหม่: สร้าง key ใหม่เช่น '2570': [ ... ]
      แล้วระบบจะเพิ่มปุ่มปีใหม่ให้อัตโนมัติ (ปีล่าสุดอยู่ซ้ายสุด)
      ========================================================= */
+  /* ใส่รูป: วางไฟล์ใน images/council/2569/ แล้วใส่ชื่อไฟล์ตรงช่อง photo
+     ถ้ายังไม่มีรูป ให้ค่าเป็น '' หรือไม่ใส่ key 'photo' การ์ดจะโชว์ตัวอักษรย่อแทน
+     แนะนำให้ใช้รูปสัดส่วน 3:4 (เช่น 600x800 px) เพื่อให้สวยที่สุด */
   const COMMITTEES = {
     '2569': [
-      { role: 'ประธานสภานักเรียน',  name: 'นายกิจติภณ พฤกษ์ไพโรจน์กุล', lead: true },
-      { role: 'รองประธานสภา',       name: 'นายนภดล นิ่มน่วม',           lead: true },
-      { role: 'เลขานุการ',          name: 'นางสาวฆรวัณณ์ ลิ้มเรืองอนันต์' },
-      { role: 'เหรัญญิก',           name: 'นางสาวธนาภา กาสุวรรณ' },
-      { role: 'ฝ่ายวิชาการ',         name: 'นางสาววิสุดา รอดวินิจ' },
-      { role: 'ฝ่ายประชาสัมพันธ์',   name: 'นางสาวสุภาสินี จำปาอินทร์' },
-      { role: 'ฝ่ายระเบียบวินัย',    name: 'นางสาวบุณณดา พานิชสมัย' },
-      { role: 'ฝ่ายสิ่งแวดล้อม',     name: 'นางสาวจิณัฐตา ปี่ทอง' },
-      { role: 'ฝ่ายสวัสดิการ',       name: 'นางสาวณัฐนรี เพ็ชรมาศ' },
-      { role: 'ฝ่ายสถิติ',           name: 'นายชญานนท์ บุญช่วย' },
-      { role: 'ฝ่ายสถิติ',           name: 'นางสาวฐาภิตตา พึ่งโพธิ์ทอง' },
-      { role: 'ฝ่ายกีฬา',            name: 'นางสาวนันทนัช พวงทอง' },
-      { role: 'ฝ่ายกีฬา',            name: 'นายณัฐภัทร โมกแก้ว' },
-      { role: 'ฝ่ายเทคโนโลยี',       name: 'นางสาววรรณิษา พิงโคกกรวด' },
-      { role: 'ฝ่ายเทคโนโลยี',       name: 'นางสาวบัณฑิตา รามัญ' }
+      { role: 'ประธานสภานักเรียน',  name: 'นายกิจติภณ พฤกษ์ไพโรจน์กุล', photo: 'images/council/2569/chair.jpg',         lead: true },
+      { role: 'รองประธานสภา',       name: 'นายนภดล นิ่มน่วม',           photo: 'images/council/2569/vice-chair.jpg',    lead: true },
+      { role: 'เลขานุการ',          name: 'นางสาวฆรวัณณ์ ลิ้มเรืองอนันต์', photo: 'images/council/2569/secretary.jpg' },
+      { role: 'เหรัญญิก',           name: 'นางสาวธนาภา กาสุวรรณ',        photo: 'images/council/2569/treasurer.jpg' },
+      { role: 'ฝ่ายวิชาการ',         name: 'นางสาววิสุดา รอดวินิจ',         photo: 'images/council/2569/academic.jpg' },
+      { role: 'ฝ่ายประชาสัมพันธ์',   name: 'นางสาวสุภาสินี จำปาอินทร์',   photo: 'images/council/2569/pr.jpg' },
+      { role: 'ฝ่ายระเบียบวินัย',    name: 'นางสาวบุณณดา พานิชสมัย',     photo: 'images/council/2569/discipline.jpg' },
+      { role: 'ฝ่ายสิ่งแวดล้อม',     name: 'นางสาวจิณัฐตา ปี่ทอง',          photo: 'images/council/2569/environment.jpg' },
+      { role: 'ฝ่ายสวัสดิการ',       name: 'นางสาวณัฐนรี เพ็ชรมาศ',         photo: 'images/council/2569/welfare.jpg' },
+      { role: 'ฝ่ายสถิติ',           name: 'นายชญานนท์ บุญช่วย',            photo: 'images/council/2569/stats-1.jpg' },
+      { role: 'ฝ่ายสถิติ',           name: 'นางสาวฐาภิตตา พึ่งโพธิ์ทอง',     photo: 'images/council/2569/stats-2.jpg' },
+      { role: 'ฝ่ายกีฬา',            name: 'นางสาวนันทนัช พวงทอง',         photo: 'images/council/2569/sports-1.jpg' },
+      { role: 'ฝ่ายกีฬา',            name: 'นายณัฐภัทร โมกแก้ว',            photo: 'images/council/2569/sports-2.jpg' },
+      { role: 'ฝ่ายเทคโนโลยี',       name: 'นางสาววรรณิษา พิงโคกกรวด',     photo: 'images/council/2569/tech-1.jpg' },
+      { role: 'ฝ่ายเทคโนโลยี',       name: 'นางสาวบัณฑิตา รามัญ',           photo: 'images/council/2569/tech-2.jpg' }
     ]
     /* ตัวอย่างเพิ่มปีใหม่:
     , '2570': [
-      { role: 'ประธานสภานักเรียน', name: '...', lead: true }
+      { role: 'ประธานสภานักเรียน', name: '...', photo: 'images/council/2570/chair.jpg', lead: true }
     ]
     */
   };
@@ -125,14 +145,30 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  /* ดึงตัวอักษรย่อจากชื่อจริง (ตัดคำนำหน้านาย/นางสาว ออก) */
+  function initialsOf(fullName) {
+    const cleaned = String(fullName || '').replace(/^(นาย|นางสาว|นาง|เด็กชาย|เด็กหญิง)\s*/, '').trim();
+    return cleaned.charAt(0) || '?';
+  }
+
   function renderMembers(year) {
     const list = COMMITTEES[year] || [];
-    grid.innerHTML = list.map(m => `
-      <div class="member-card${m.lead ? ' lead' : ''}">
-        <span class="role">${escapeHtml(m.role)}</span>
-        <h3>${escapeHtml(m.name)}</h3>
-      </div>
-    `).join('');
+    grid.innerHTML = list.map(m => {
+      const initials = escapeHtml(initialsOf(m.name));
+      const photo = m.photo
+        ? `<img src="${escapeHtml(m.photo)}" alt="${escapeHtml(m.name)}" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+           <span class="initials" style="display:none;">${initials}</span>`
+        : `<span class="initials">${initials}</span>`;
+      return `
+        <div class="member-card${m.lead ? ' lead' : ''}">
+          <div class="member-photo">${photo}</div>
+          <div class="member-body">
+            <span class="role">${escapeHtml(m.role)}</span>
+            <h3>${escapeHtml(m.name)}</h3>
+          </div>
+        </div>`;
+    }).join('');
     grid.querySelectorAll('.member-card').forEach(c => c.classList.add('reveal', 'in'));
   }
 
@@ -153,7 +189,7 @@
 })();
 /*
 git add .
-git commit -m "edit concil file"
+git commit -m "edit concil"
 git push
 */
 </script>
