@@ -140,3 +140,7 @@ name | class | category | award | year | igusername | detail
 - ถ้าดึง CSV ไม่ได้ เว็บจะถอยกลับไปใช้ data/hall.json อัตโนมัติ
 - Google cache ลิงก์ CSV ราว ๆ ไม่กี่นาที ถ้าแก้แล้วยังไม่เปลี่ยน รอสักครู่
   แล้ว refresh แบบล้าง cache (Ctrl+Shift+R)
+
+git add hall-of-fame.html
+git commit -m "edit"
+git push
