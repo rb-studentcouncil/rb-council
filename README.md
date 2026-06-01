@@ -8,9 +8,9 @@
 
 - `index.html` — หน้าแรก / ศูนย์รวม
 - `council.html` — ข้อมูลสภานักเรียน
-- `hall-of-fame.html` — Hall of Fame (ดึงข้อมูลจาก Google Sheets ได้)
+- `hall-of-fame.html` — Hall of Fame (ดึงข้อมูลจาก Google Sheets — ดู `HALL_OF_FAME_SETUP.md`)
 - `find-your-future.html` — ข้อมูลเรียนต่อ / TCAS
-- `calendar.html` — ปฏิทินวันสำคัญ
+- `calendar.html` — ปฏิทินวันสำคัญ (ดึงข้อมูลจาก Google Sheets — ดู `CALENDAR_SETUP.md`)
 - `schedule.html` — ตารางเรียน (ลิงก์ไประบบตารางสอนของโรงเรียน)
 
 ## เปิดดูในเครื่อง (local)

@@ -12,9 +12,15 @@
   .tl-item { position: relative; margin-bottom: 18px; }
   .tl-item::before { content:''; position:absolute; left:-25px; top:24px; width:12px; height:12px; border-radius:50%; background:var(--pink); border:3px solid var(--paper); box-shadow:0 0 0 2px var(--pink-soft); }
   .tl-item.done::before { background:var(--grey); box-shadow:0 0 0 2px var(--line); }
+  .tl-item h3 { margin:10px 0 4px; font-family:var(--head); font-size:16px; }
+  .tl-item p { font-size:13px; color:var(--grey); }
   .pill-when { display:inline-block; font-family:var(--head); font-size:12px; font-weight:600; color:var(--pink-deep); background:var(--pink-soft); padding:3px 10px; border-radius:999px; }
   .pill-when.soon { color:var(--gold-deep); background:#FFF1DC; }
   .pill-when.past { color:var(--grey); background:var(--line); }
+  .col-head { font-family:var(--head); font-size:22px; margin-bottom:20px; color:var(--charcoal); }
+  .empty-note { color:var(--grey); font-size:14px; padding:20px 0; }
+  .load-error { background:#FFF1DC; border:1px solid #F0CF94; border-radius:var(--radius); padding:16px 18px; color:var(--gold-deep); font-size:13px; }
+  .load-error b { display:block; margin-bottom:4px; color:var(--charcoal); font-family:var(--head); }
 </style>
 </head>
 <body>
@@ -44,24 +50,16 @@
 <section style="padding-top:24px;">
   <div class="wrap">
     <div class="grid grid-2">
-      <!-- TCAS column -->
       <div class="reveal">
-        <h2 style="font-family:var(--head);font-size:22px;margin-bottom:20px;color:var(--charcoal);">🎓 TCAS / สอบ / ทุน</h2>
-        <div class="timeline">
-          <div class="tl-item card"><span class="pill-when soon">อีก 4 วัน</span><h3 style="margin:10px 0 4px;font-family:var(--head);font-size:16px;">ประกาศผล TCAS รอบ 3 ครั้งที่ 2</h3><p style="font-size:13px;color:var(--grey);">26 พ.ค. 2569</p></div>
-          <div class="tl-item card"><span class="pill-when soon">อีก 6 วัน</span><h3 style="margin:10px 0 4px;font-family:var(--head);font-size:16px;">สมัคร TCAS รอบ 4 Direct Admission</h3><p style="font-size:13px;color:var(--grey);">28 พ.ค. – 14 มิ.ย. 2569</p></div>
-          <div class="tl-item card"><span class="pill-when">ติดตามประกาศ</span><h3 style="margin:10px 0 4px;font-family:var(--head);font-size:16px;">กยศ. ปีการศึกษา 2569</h3><p style="font-size:13px;color:var(--grey);">รอตรวจสอบวันตามประกาศ</p></div>
-          <div class="tl-item card done"><span class="pill-when past">ผ่านแล้ว</span><h3 style="margin:10px 0 4px;font-family:var(--head);font-size:16px;">ขอทบทวนผลคะแนน A-Level</h3><p style="font-size:13px;color:var(--grey);">21 – 27 เม.ย. 2569</p></div>
+        <h2 class="col-head">🎓 TCAS / สอบ / ทุน</h2>
+        <div class="timeline" id="colTcas">
+          <div class="empty-note">กำลังโหลด…</div>
         </div>
       </div>
-      <!-- School column -->
       <div class="reveal">
-        <h2 style="font-family:var(--head);font-size:22px;margin-bottom:20px;color:var(--charcoal);">🏫 กิจกรรมโรงเรียน</h2>
-        <div class="timeline">
-          <div class="tl-item card"><span class="pill-when">เร็ว ๆ นี้</span><h3 style="margin:10px 0 4px;font-family:var(--head);font-size:16px;">ค่ายผู้นำสภานักเรียน RB ครั้งที่ 1</h3><p style="font-size:13px;color:var(--grey);">รอประกาศวัน · หอประชุมโรงเรียน</p></div>
-          <div class="tl-item card done"><span class="pill-when past">ผ่านแล้ว</span><h3 style="margin:10px 0 4px;font-family:var(--head);font-size:16px;">ลงทะเบียนกิจกรรมชุมนุม</h3><p style="font-size:13px;color:var(--grey);">21 พ.ค. 2569 · คาบที่ 8</p></div>
-          <div class="tl-item card done"><span class="pill-when past">ผ่านแล้ว</span><h3 style="margin:10px 0 4px;font-family:var(--head);font-size:16px;">อบรมแกนนำสิ่งแวดล้อม</h3><p style="font-size:13px;color:var(--grey);">16 พ.ค. 2569</p></div>
-          <div class="tl-item card done"><span class="pill-when past">ผ่านแล้ว</span><h3 style="margin:10px 0 4px;font-family:var(--head);font-size:16px;">เปิดภาคเรียนที่ 1/2569</h3><p style="font-size:13px;color:var(--grey);">พฤษภาคม 2569</p></div>
+        <h2 class="col-head">🏫 กิจกรรมโรงเรียน</h2>
+        <div class="timeline" id="colSchool">
+          <div class="empty-note">กำลังโหลด…</div>
         </div>
       </div>
     </div>
@@ -80,5 +78,125 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script>
+(function () {
+  /* ============================================================
+     CONFIG — วางลิงก์ Google Sheets CSV ตรงนี้ (แยก 2 ชีต)
+     วิธีตั้ง Sheet ดูในไฟล์ CALENDAR_SETUP.md
+     ถ้าเว้นว่างไว้ ('') คอลัมน์นั้นจะขึ้นข้อความ "ยังไม่มีกิจกรรม"
+     ============================================================ */
+  const TCAS_CSV_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAOZ2G00rVq18J7o7slPlQLkxneMOh019FXniOUcoyFzLjbh7JVGWo2ygG8PE2L6Hft2a7abnXvUz5/pub?gid=0&single=true&output=csv';
+  const SCHOOL_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAOZ2G00rVq18J7o7slPlQLkxneMOh019FXniOUcoyFzLjbh7JVGWo2ygG8PE2L6Hft2a7abnXvUz5/pub?gid=1736351558&single=true&output=csv';
+  /* ============================================================ */
+
+  const colTcas = document.getElementById('colTcas');
+  const colSchool = document.getElementById('colSchool');
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i], next = text[i + 1];
+      if (inQuotes) {
+        if (c === '"' && next === '"') { field += '"'; i++; }
+        else if (c === '"') { inQuotes = false; }
+        else { field += c; }
+      } else {
+        if (c === '"') { inQuotes = true; }
+        else if (c === ',') { row.push(field); field = ''; }
+        else if (c === '\r') { /* skip */ }
+        else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+        else { field += c; }
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows;
+  }
+
+  function csvToEntries(text) {
+    const rows = parseCSV(text).filter(r => r.some(c => c.trim() !== ''));
+    if (rows.length < 2) return [];
+    const headers = rows[0].map(h => h.trim().toLowerCase());
+    return rows.slice(1).map(r => {
+      const o = {};
+      headers.forEach((h, idx) => { o[h] = (r[idx] || '').trim(); });
+      return o;
+    }).filter(o => o.title);
+  }
+
+  /* แยก status: soon / past / normal — ใช้คอลัมน์ status ใน Sheet
+     ถ้าไม่ใส่จะเป็นปกติ (สีชมพู) */
+  function statusClass(s) {
+    const v = String(s || '').toLowerCase().trim();
+    if (v === 'past' || v === 'ผ่านแล้ว' || v === 'ผ่าน') return 'past';
+    if (v === 'soon' || v === 'เร็ว ๆ นี้' || v === 'ใกล้') return 'soon';
+    return '';
+  }
+  function statusLabel(s, fallback) {
+    const v = String(s || '').trim();
+    if (!v) return fallback || 'ติดตามประกาศ';
+    /* ถ้าเป็นคีย์เวิร์ดอังกฤษ แปลเป็นไทย */
+    const map = { past: 'ผ่านแล้ว', soon: 'เร็ว ๆ นี้' };
+    return map[v.toLowerCase()] || v;
+  }
+
+  /* จัดเรียง: ที่ยังไม่ผ่านขึ้นก่อน (soon → normal) แล้วค่อย past */
+  function sortEvents(list) {
+    const order = { soon: 0, '': 1, past: 2 };
+    return list.slice().sort((a, b) => {
+      const sa = statusClass(a.status);
+      const sb = statusClass(b.status);
+      return (order[sa] ?? 1) - (order[sb] ?? 1);
+    });
+  }
+
+  function renderColumn(el, list, emptyMsg) {
+    if (!list.length) {
+      el.innerHTML = `<div class="empty-note">${escapeHtml(emptyMsg)}</div>`;
+      return;
+    }
+    el.innerHTML = sortEvents(list).map(e => {
+      const cls = statusClass(e.status);
+      const label = statusLabel(e.when_label || e.status, '');
+      return `
+        <div class="tl-item card ${cls === 'past' ? 'done' : ''}">
+          <span class="pill-when ${cls}">${escapeHtml(label)}</span>
+          <h3>${escapeHtml(e.title)}</h3>
+          ${e.date ? `<p>${escapeHtml(e.date)}${e.location ? ' · ' + escapeHtml(e.location) : ''}</p>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  /* โหลด 1 ชีตเข้าคอลัมน์ที่ระบุ */
+  function loadColumn(el, url, emptyMsg) {
+    if (!url || !url.trim()) {
+      el.innerHTML = `<div class="empty-note">${escapeHtml(emptyMsg || 'ยังไม่ได้ตั้ง Google Sheet')}</div>`;
+      return;
+    }
+    fetch(url)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(text => {
+        const entries = csvToEntries(text);
+        if (!entries.length) {
+          el.innerHTML = '<div class="empty-note">ยังไม่มีกิจกรรม</div>';
+          return;
+        }
+        renderColumn(el, entries, 'ยังไม่มีกิจกรรม');
+      })
+      .catch(err => {
+        el.innerHTML = `<div class="load-error"><b>โหลดข้อมูลไม่สำเร็จ</b>${escapeHtml(err.message)}</div>`;
+      });
+  }
+
+  loadColumn(colTcas,   TCAS_CSV_URL,   'ยังไม่ได้ตั้ง Google Sheet สำหรับ TCAS');
+  loadColumn(colSchool, SCHOOL_CSV_URL, 'ยังไม่ได้ตั้ง Google Sheet สำหรับกิจกรรมโรงเรียน');
+})();
+</script>
 </body>
 </html>
