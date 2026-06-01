@@ -9,7 +9,7 @@
 - `index.html` — หน้าแรก / ศูนย์รวม
 - `council.html` — ข้อมูลสภานักเรียน
 - `hall-of-fame.html` — Hall of Fame (ดึงข้อมูลจาก Google Sheets — ดู `HALL_OF_FAME_SETUP.md`)
-- `find-your-future.html` — ข้อมูลเรียนต่อ / TCAS
+- `find-your-future.html` — ค่าย ทุน กิจกรรม (ดึงข้อมูลจาก Google Sheets — ดู `FIND_YOUR_FUTURE_SETUP.md`)
 - `calendar.html` — ปฏิทินวันสำคัญ (ดึงข้อมูลจาก Google Sheets — ดู `CALENDAR_SETUP.md`)
 - `schedule.html` — ตารางเรียน (ลิงก์ไประบบตารางสอนของโรงเรียน)
 

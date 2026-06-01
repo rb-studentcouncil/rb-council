@@ -42,8 +42,8 @@
 <section class="page-hero">
   <div class="wrap">
     <div class="crumb reveal"><a href="index.html">หน้าแรก</a> / ปฏิทิน</div>
-    <h1 class="reveal">ปฏิทินวันสำคัญ</h1>
-    <p class="reveal">รวมวันสอบ เดดไลน์ TCAS กิจกรรมโรงเรียน และวันหยุดที่ชาว RB ควรรู้ — อัปเดตตามประกาศของโรงเรียนและ ทปอ.</p>
+    <h1 class="reveal">ปฏิทิน</h1>
+    <p class="reveal">รวมวันสอบ เดดไลน์ TCAS กิจกรรมโรงเรียน และวันหยุดที่ชาว RB ควรรู้ — อัปเดตตามประกาศของโรงเรียน และ ทปอ.</p>
   </div>
 </section>
 
@@ -251,62 +251,41 @@
     return Math.round((db - da) / 86400000);
   }
 
-  /* ============ ระบบ status + label ============ */
-  function manualStatusClass(s) {
-    const v = String(s || '').toLowerCase().trim();
-    if (v === 'past' || v === 'ผ่านแล้ว' || v === 'ผ่าน') return 'past';
-    if (v === 'soon' || v === 'เร็ว ๆ นี้' || v === 'ใกล้') return 'soon';
-    return '';
-  }
-
-  /* คำนวณ status + label อัตโนมัติจากวันที่ (รองรับช่วงวัน)
+  /* ============ คำนวณ status + label อัตโนมัติจากวันที่ ============
      กรณีต่าง ๆ:
        - วันเดียว: ใช้วันนั้นเทียบกับวันนี้
-       - ช่วงวัน + ยังไม่เริ่ม: "อีก X วัน" (เริ่ม)
+       - ช่วงวัน + ยังไม่เริ่ม: "อีก X วัน"
        - ช่วงวัน + กำลังเปิด: "กำลังเปิด · เหลือ X วัน"
        - ช่วงวัน + เลยปิดแล้ว: "ผ่านแล้ว"
-     ถ้าคน manual ตั้งใน Sheet → ใช้ของ Sheet override */
+       - parse วันที่ไม่ได้ (เช่น "รอประกาศวัน") → "ติดตามประกาศ"
+  */
   function computeStatus(e) {
-    const manualCls = manualStatusClass(e.status);
-    const manualLabel = String(e.when_label || '').trim();
-
     const range = parseDateRange(e);
-    let autoCls = '';
-    let autoLabel = '';
-    let sortDays = null;  /* ใช้เรียง (วันที่ใกล้สุด) */
+    if (!range) return { cls: '', label: 'ติดตามประกาศ', days: null };
 
-    if (range) {
-      const today = new Date(); today.setHours(0,0,0,0);
-      const daysToStart = daysBetween(today, range.start);
-      const daysToEnd = range.end ? daysBetween(today, range.end) : daysToStart;
-      sortDays = daysToStart;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const daysToStart = daysBetween(today, range.start);
+    const daysToEnd = range.end ? daysBetween(today, range.end) : daysToStart;
+    let sortDays = daysToStart;
+    let cls = '', label = '';
 
-      if (daysToEnd < 0) {
-        /* จบไปแล้ว */
-        autoCls = 'past';
-        autoLabel = daysToEnd === -1 ? 'เมื่อวาน' : `ผ่านมา ${-daysToEnd} วัน`;
-      } else if (range.end && daysToStart <= 0 && daysToEnd >= 0) {
-        /* กำลังเปิด (อยู่ในช่วง) */
-        autoCls = 'soon';
-        autoLabel = daysToEnd === 0 ? 'วันสุดท้าย' : `กำลังเปิด · เหลือ ${daysToEnd} วัน`;
-        sortDays = 0;  /* ลำดับสูงสุด */
-      } else if (daysToStart === 0) {
-        autoCls = 'soon';
-        autoLabel = 'วันนี้';
-      } else if (daysToStart === 1) {
-        autoCls = 'soon';
-        autoLabel = 'พรุ่งนี้';
-      } else if (daysToStart <= 30) {
-        autoCls = 'soon';
-        autoLabel = `อีก ${daysToStart} วัน`;
-      } else {
-        autoCls = '';
-        autoLabel = `อีก ${daysToStart} วัน`;
-      }
+    if (daysToEnd < 0) {
+      cls = 'past';
+      label = daysToEnd === -1 ? 'เมื่อวาน' : `ผ่านมา ${-daysToEnd} วัน`;
+    } else if (range.end && daysToStart <= 0 && daysToEnd >= 0) {
+      cls = 'soon';
+      label = daysToEnd === 0 ? 'วันสุดท้าย' : `กำลังเปิด · เหลือ ${daysToEnd} วัน`;
+      sortDays = 0;
+    } else if (daysToStart === 0) {
+      cls = 'soon'; label = 'วันนี้';
+    } else if (daysToStart === 1) {
+      cls = 'soon'; label = 'พรุ่งนี้';
+    } else if (daysToStart <= 30) {
+      cls = 'soon'; label = `อีก ${daysToStart} วัน`;
+    } else {
+      cls = ''; label = `อีก ${daysToStart} วัน`;
     }
 
-    const cls = manualCls || autoCls;
-    const label = manualLabel || autoLabel || 'ติดตามประกาศ';
     return { cls, label, days: sortDays };
   }
 

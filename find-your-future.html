@@ -4,8 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Find Your Future | Ratchaborikanukroh Student Council</title>
-<meta name="description" content="ข้อมูลเรียนต่อ TCAS คณะ มหาวิทยาลัย และคำแนะนำการทำพอร์ตสำหรับนักเรียนราชโบริกานุเคราะห์">
+<meta name="description" content="ค่าย ทุน กิจกรรม และโอกาสเรียนต่อสำหรับนักเรียนราชโบริกานุเคราะห์">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  .filter-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px; }
+  .filter-btn {
+    font-family:var(--head); font-size:13px; font-weight:600; padding:7px 16px;
+    border-radius:999px; border:1px solid var(--line); background:var(--white);
+    color:var(--ink); cursor:pointer; transition:.18s;
+  }
+  .filter-btn:hover { border-color:var(--pink); color:var(--pink-deep); }
+  .filter-btn.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; border-color:transparent; box-shadow:var(--shadow-sm); }
+
+  .opp-list { display:flex; flex-direction:column; gap:14px; }
+  .opp-card {
+    position:relative;
+    background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px 22px; box-shadow:var(--shadow-sm);
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start;
+  }
+  .opp-card:hover { transform:translateY(-3px); box-shadow:var(--shadow); border-color:var(--pink-soft); }
+  .opp-main { min-width:0; }
+  .opp-card .tag {
+    display:inline-block; font-family:var(--head); font-size:11px; font-weight:600;
+    letter-spacing:.5px; text-transform:uppercase; color:var(--pink-deep);
+    background:var(--pink-soft); padding:4px 10px; border-radius:999px; margin-bottom:8px;
+  }
+  .opp-card h3 { font-family:var(--head); font-weight:700; font-size:18px; color:var(--charcoal); margin-bottom:6px; line-height:1.35; }
+  .opp-card .detail { font-size:14px; color:var(--grey); margin-bottom:10px; line-height:1.6; }
+  .opp-card .opp-link { display:inline-flex; align-items:center; gap:6px; font-family:var(--head); font-size:13px; font-weight:600; color:var(--pink-deep); }
+  .opp-card .opp-link:hover { text-decoration:underline; }
+  .opp-right {
+    display:flex; flex-direction:column; align-items:flex-end; gap:6px;
+    text-align:right; white-space:nowrap;
+  }
+  .pill-when { display:inline-block; font-family:var(--head); font-size:12px; font-weight:600; color:var(--pink-deep); background:var(--pink-soft); padding:3px 10px; border-radius:999px; }
+  .pill-when.soon { color:var(--gold-deep); background:#FFF1DC; }
+  .pill-when.past { color:var(--grey); background:var(--line); }
+  .opp-date { font-size:13px; color:var(--grey); }
+
+  .empty-note { color:var(--grey); font-size:15px; padding:40px 0; text-align:center; }
+  .load-error { background:#FFF1DC; border:1px solid #F0CF94; border-radius:var(--radius); padding:18px 22px; color:var(--gold-deep); font-size:14px; }
+  .load-error b { display:block; margin-bottom:4px; color:var(--charcoal); font-family:var(--head); }
+
+  @media (max-width:600px){
+    .opp-card { grid-template-columns:1fr; padding:16px 18px; }
+    .opp-right { align-items:flex-start; text-align:left; }
+    .opp-card h3 { font-size:16px; }
+  }
+</style>
 </head>
 <body>
 <div class="bg-grain"></div>
@@ -27,45 +75,16 @@
   <div class="wrap">
     <div class="crumb reveal"><a href="index.html">หน้าแรก</a> / Find Your Future</div>
     <h1 class="reveal">Find Your <span class="hl" style="color:var(--pink-deep)">Future</span></h1>
-    <p class="reveal">พื้นที่ช่วยวางแผนเรียนต่อสำหรับชาว RB — รวมข้อมูล TCAS สนามสอบ คณะเป้าหมาย ชีทอ่านสอบ และคำแนะนำจากรุ่นพี่ ให้เห็นทางเลือกก่อนถึงวันสมัครจริง</p>
+    <p class="reveal">รวมค่าย ทุน กิจกรรม และโอกาสเรียนต่อ — กรองตามหมวดเพื่อหากิจกรรมที่เหมาะกับเรา</p>
   </div>
 </section>
 
-<!-- TCAS STEPS -->
-<section style="padding-top:24px;">
+<section style="padding-top:0;">
   <div class="wrap">
-    <div class="sec-head reveal"><div><h2>จากคำถามสั้น ๆ สู่แผนที่ชัดขึ้น</h2><p>เริ่มต้นวางแผนได้ใน 3 ขั้น</p></div></div>
-    <div class="grid grid-3">
-      <div class="card reveal"><span class="tag">1</span><h3>สำรวจตัวเอง</h3><p>ค้นหาความถนัดและความสนใจ เพื่อจำกัดกลุ่มคณะที่เหมาะกับเรา</p></div>
-      <div class="card reveal"><span class="tag">2</span><h3>เลือกเป้าหมาย</h3><p>กำหนดคณะ สนามสอบที่ต้องเตรียม และองค์ประกอบพอร์ตที่ต้องมี</p></div>
-      <div class="card reveal"><span class="tag">3</span><h3>ใช้ทรัพยากร</h3><p>ชีทอ่านสอบ ตัวอย่างพอร์ต และคำแนะนำจากรุ่นพี่ที่ผ่านการสมัครจริง</p></div>
+    <div class="filter-row reveal" id="filterRow"></div>
+    <div class="opp-list" id="oppList">
+      <div class="empty-note">กำลังโหลด…</div>
     </div>
-  </div>
-</section>
-
-<!-- RESOURCE TOOLS -->
-<section style="background:var(--pink-tint);">
-  <div class="wrap">
-    <div class="sec-head reveal"><div><h2>เครื่องมือและแหล่งข้อมูล</h2><p>เลือกใช้ตามขั้นที่กำลังเตรียม</p></div></div>
-    <div class="grid grid-2">
-      <div class="card reveal"><span class="tag">ค้นหาเส้นทาง</span><h3>My Path Finder</h3><p>ตอบคำถามสั้น ๆ เพื่อสำรวจความถนัด ความสนใจ และดูเส้นทางเรียนต่อที่น่าลองศึกษา — เป็นคำแนะนำ ไม่ใช่การตัดสินแทน</p></div>
-      <div class="card reveal"><span class="tag">วางอันดับ</span><h3>Admission Simulator</h3><p>กรอก GPAX และคะแนนสอบ แล้วลองเทียบกับคณะเป้าหมาย เพื่อจัดกลุ่มอันดับ ปลอดภัย–ลุ้น–ท้าทาย</p></div>
-      <div class="card reveal"><span class="tag">คลังความรู้</span><h3>Study Library</h3><p>รวมไฟล์สรุป แนวข้อสอบ และลิงก์ติว แยกตามระดับชั้น วิชา และสนามสอบ TGAT/TPAT/A-Level</p></div>
-      <div class="card reveal"><span class="tag">ถามรุ่นพี่</span><h3>Senior Advice & Portfolio</h3><p>คำแนะนำจากรุ่นพี่ที่ผ่านการสมัครจริง พร้อมตัวอย่างพอร์ตแยกตามคณะ (ใช้เพื่อศึกษาแนวทาง ไม่ใช่ต้นฉบับให้ลอก)</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- TCAS LINKS -->
-<section>
-  <div class="wrap">
-    <div class="sec-head reveal"><div><h2>ลิงก์สำคัญ</h2><p>แหล่งข้อมูลทางการ</p></div></div>
-    <div class="grid grid-3">
-      <a href="https://student.mytcas.com" target="_blank" class="card reveal"><span class="tag">TCAS</span><h3>ระบบ myTCAS</h3><p>สมัคร ตรวจสอบคะแนน และยืนยันสิทธิ์ระบบ TCAS ทุกรอบ</p></a>
-      <a href="https://www.studentloan.or.th" target="_blank" class="card reveal"><span class="tag">ทุน</span><h3>กยศ.</h3><p>ข้อมูลกองทุนเงินให้กู้ยืมเพื่อการศึกษาและการสมัคร</p></a>
-      <a href="https://www.srimuang.ac.th" target="_blank" class="card reveal"><span class="tag">โรงเรียน</span><h3>ฝ่ายแนะแนว RB</h3><p>ติดต่อครูแนะแนวเพื่อขอคำปรึกษาเรื่องการเรียนต่อ</p></a>
-    </div>
-    <p style="text-align:center;color:var(--grey);margin-top:30px;font-size:13px;" class="reveal">* ข้อมูลในหน้านี้เป็นแนวทางประกอบการตัดสินใจ ไม่ใช่การรับรองผลสมัครหรือคะแนนขั้นต่ำจริง โปรดตรวจสอบกับประกาศทางการของแต่ละมหาวิทยาลัยอีกครั้ง</p>
   </div>
 </section>
 
@@ -81,5 +100,256 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script>
+(function () {
+  /* ============================================================
+     CONFIG — วางลิงก์ Google Sheets CSV ตรงนี้
+     วิธีตั้ง Sheet ดูในไฟล์ FIND_YOUR_FUTURE_SETUP.md
+     ถ้าเว้นว่างไว้ ('') หน้านี้จะขึ้นข้อความ "ยังไม่มีกิจกรรม"
+
+     คอลัมน์ที่ระบบอ่าน: title | category | detail | link | date | date_iso
+     ============================================================ */
+  const SHEET_CSV_URL = '';
+  /* ============================================================ */
+
+  /* หมวดที่จะมีปุ่มกรอง (ปุ่ม "ทั้งหมด" เพิ่มอัตโนมัติ) */
+  const DEFAULT_CATEGORIES = ['วิชาการ', 'กิจกรรม', 'อาสา', 'อื่นๆ'];
+
+  const filterRow = document.getElementById('filterRow');
+  const list = document.getElementById('oppList');
+  let allEntries = [];
+  let activeCat = 'ทั้งหมด';
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i], next = text[i + 1];
+      if (inQuotes) {
+        if (c === '"' && next === '"') { field += '"'; i++; }
+        else if (c === '"') { inQuotes = false; }
+        else { field += c; }
+      } else {
+        if (c === '"') { inQuotes = true; }
+        else if (c === ',') { row.push(field); field = ''; }
+        else if (c === '\r') { /* skip */ }
+        else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+        else { field += c; }
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows;
+  }
+
+  function csvToEntries(text) {
+    const rows = parseCSV(text).filter(r => r.some(c => c.trim() !== ''));
+    if (rows.length < 2) return [];
+    const headers = rows[0].map(h => h.trim().toLowerCase());
+    return rows.slice(1).map(r => {
+      const o = {};
+      headers.forEach((h, idx) => { o[h] = (r[idx] || '').trim(); });
+      return o;
+    }).filter(o => o.title);
+  }
+
+  /* ========= ระบบ parse วันที่ (รองรับช่วงวัน + ไทย/ISO) ========= */
+  const THAI_MONTHS = {
+    'ม.ค':0,  'มค':0,  'มกราคม':0,
+    'ก.พ':1,  'กพ':1,  'กุมภา':1, 'กุมภาพันธ์':1,
+    'มี.ค':2, 'มีค':2, 'มีนา':2, 'มีนาคม':2,
+    'เม.ย':3, 'เมย':3, 'เมษา':3, 'เมษายน':3,
+    'พ.ค':4,  'พค':4,  'พฤษภา':4, 'พฤษภาคม':4,
+    'มิ.ย':5, 'มิย':5, 'มิถุนา':5, 'มิถุนายน':5,
+    'ก.ค':6,  'กค':6,  'กรกฎา':6, 'กรกฎาคม':6,
+    'ส.ค':7,  'สค':7,  'สิงหา':7, 'สิงหาคม':7,
+    'ก.ย':8,  'กย':8,  'กันยา':8, 'กันยายน':8,
+    'ต.ค':9,  'ตค':9,  'ตุลา':9, 'ตุลาคม':9,
+    'พ.ย':10, 'พย':10, 'พฤศจิ':10, 'พฤศจิกายน':10,
+    'ธ.ค':11, 'ธค':11, 'ธันวา':11, 'ธันวาคม':11
+  };
+
+  function parseOnePiece(piece, fallbackYear, fallbackMonth) {
+    const m = piece.match(/^(\d{1,2})\s*([ก-๙\.]+)?\s*(\d{2,4})?/);
+    if (!m) return null;
+    const day = parseInt(m[1], 10);
+    const monthRaw = (m[2] || '').replace(/\s+/g, '');
+    const yearRaw = m[3];
+    let month = -1;
+    if (monthRaw) {
+      for (const key in THAI_MONTHS) {
+        if (monthRaw.startsWith(key) || monthRaw === key + '.') { month = THAI_MONTHS[key]; break; }
+      }
+    } else if (fallbackMonth !== undefined) month = fallbackMonth;
+    if (month < 0) return null;
+    let year;
+    if (yearRaw) {
+      const y = parseInt(yearRaw, 10);
+      if (y > 2400) year = y - 543;
+      else if (y < 100) year = 2000 + y;
+      else year = y;
+    } else if (fallbackYear !== undefined) year = fallbackYear;
+    else year = new Date().getFullYear();
+    const d = new Date(year, month, day);
+    return isNaN(d) ? null : d;
+  }
+
+  function parseDateRange(e) {
+    const iso = String(e.date_iso || '').trim();
+    if (iso) {
+      const parts = iso.split(/\s*[~]\s*/);
+      const m1 = parts[0].match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+      if (m1) {
+        const start = new Date(+m1[1], +m1[2]-1, +m1[3]);
+        let end = null;
+        if (parts[1]) {
+          const m2 = parts[1].match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+          if (m2) end = new Date(+m2[1], +m2[2]-1, +m2[3]);
+        }
+        if (!isNaN(start)) return { start, end };
+      }
+    }
+    const raw = String(e.date || '').trim();
+    if (!raw) return null;
+    const rangeParts = raw.split(/\s+[–-]\s+/);
+    if (rangeParts.length === 1) {
+      const d = parseOnePiece(rangeParts[0]);
+      return d ? { start: d, end: null } : null;
+    }
+    const endDate = parseOnePiece(rangeParts[1].trim());
+    if (!endDate) {
+      const startOnly = parseOnePiece(rangeParts[0].trim());
+      return startOnly ? { start: startOnly, end: null } : null;
+    }
+    const startPiece = rangeParts[0].trim();
+    const hasMonth = /[ก-๙]/.test(startPiece);
+    const startDate = parseOnePiece(startPiece, endDate.getFullYear(), hasMonth ? undefined : endDate.getMonth());
+    return { start: startDate || endDate, end: endDate };
+  }
+
+  function daysBetween(a, b) {
+    const da = new Date(a); da.setHours(0,0,0,0);
+    const db = new Date(b); db.setHours(0,0,0,0);
+    return Math.round((db - da) / 86400000);
+  }
+
+  function computeStatus(e) {
+    const range = parseDateRange(e);
+    if (!range) return { cls:'', label:'ติดตามประกาศ', days:null };
+    const today = new Date(); today.setHours(0,0,0,0);
+    const daysToStart = daysBetween(today, range.start);
+    const daysToEnd = range.end ? daysBetween(today, range.end) : daysToStart;
+    let sortDays = daysToStart, cls = '', label = '';
+    if (daysToEnd < 0) {
+      cls = 'past';
+      label = daysToEnd === -1 ? 'เมื่อวาน' : `ผ่านมา ${-daysToEnd} วัน`;
+    } else if (range.end && daysToStart <= 0 && daysToEnd >= 0) {
+      cls = 'soon';
+      label = daysToEnd === 0 ? 'วันสุดท้าย' : `กำลังเปิด · เหลือ ${daysToEnd} วัน`;
+      sortDays = 0;
+    } else if (daysToStart === 0) { cls = 'soon'; label = 'วันนี้'; }
+    else if (daysToStart === 1) { cls = 'soon'; label = 'พรุ่งนี้'; }
+    else if (daysToStart <= 30) { cls = 'soon'; label = `อีก ${daysToStart} วัน`; }
+    else { cls = ''; label = `อีก ${daysToStart} วัน`; }
+    return { cls, label, days: sortDays };
+  }
+
+  /* ========= render ========= */
+  function sortEntries(entries) {
+    return entries.slice().map((e, idx) => ({ e, idx, s: computeStatus(e) }))
+      .sort((a, b) => {
+        const aPast = a.s.cls === 'past';
+        const bPast = b.s.cls === 'past';
+        if (aPast !== bPast) return aPast ? 1 : -1;
+        const ad = a.s.days, bd = b.s.days;
+        if (ad !== null && bd !== null) return aPast ? bd - ad : ad - bd;
+        if (ad !== null) return -1;
+        if (bd !== null) return 1;
+        return a.idx - b.idx;
+      }).map(x => ({ ...x.e, __status: x.s }));
+  }
+
+  function renderList() {
+    const filtered = activeCat === 'ทั้งหมด'
+      ? allEntries
+      : allEntries.filter(e => (e.category || 'อื่นๆ') === activeCat);
+    const sorted = sortEntries(filtered);
+
+    if (!sorted.length) {
+      list.innerHTML = '<div class="empty-note">ยังไม่มีรายการในหมวดนี้</div>';
+      return;
+    }
+
+    list.innerHTML = sorted.map(e => {
+      const { cls, label } = e.__status;
+      const linkHtml = e.link
+        ? `<a class="opp-link" href="${escapeHtml(e.link)}" target="_blank" rel="noopener">เปิดลิงก์ →</a>`
+        : '';
+      return `
+        <article class="opp-card ${cls === 'past' ? 'is-past' : ''}">
+          <div class="opp-main">
+            ${e.category ? `<span class="tag">${escapeHtml(e.category)}</span>` : ''}
+            <h3>${escapeHtml(e.title)}</h3>
+            ${e.detail ? `<div class="detail">${escapeHtml(e.detail)}</div>` : ''}
+            ${linkHtml}
+          </div>
+          <div class="opp-right">
+            <span class="pill-when ${cls}">${escapeHtml(label)}</span>
+            ${e.date ? `<div class="opp-date">${escapeHtml(e.date)}</div>` : ''}
+          </div>
+        </article>`;
+    }).join('');
+  }
+
+  function buildFilters() {
+    /* หมวดที่มีใน data + หมวด default */
+    const seen = new Set(DEFAULT_CATEGORIES);
+    allEntries.forEach(e => { if (e.category) seen.add(e.category); });
+    const cats = ['ทั้งหมด', ...DEFAULT_CATEGORIES, ...[...seen].filter(c => !DEFAULT_CATEGORIES.includes(c))];
+
+    filterRow.innerHTML = cats.map((c, i) =>
+      `<button class="filter-btn${i === 0 ? ' active' : ''}" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`
+    ).join('');
+    filterRow.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCat = btn.dataset.cat;
+        filterRow.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderList();
+      });
+    });
+  }
+
+  function showEmpty() {
+    filterRow.innerHTML = '';
+    list.innerHTML = '<div class="empty-note">ยังไม่มีรายการ (ยังไม่ได้ตั้ง Google Sheet)</div>';
+  }
+
+  function showError(msg) {
+    filterRow.innerHTML = '';
+    list.innerHTML = `<div class="load-error"><b>โหลดข้อมูลไม่สำเร็จ</b>${escapeHtml(msg)}</div>`;
+  }
+
+  if (SHEET_CSV_URL && SHEET_CSV_URL.trim()) {
+    fetch(SHEET_CSV_URL)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(text => {
+        const entries = csvToEntries(text);
+        if (!entries.length) { showEmpty(); return; }
+        allEntries = entries;
+        buildFilters();
+        renderList();
+      })
+      .catch(err => showError('ดึง Google Sheets ไม่ได้: ' + err.message));
+  } else {
+    showEmpty();
+  }
+})();
+</script>
 </body>
 </html>
