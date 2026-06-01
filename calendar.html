@@ -130,30 +130,204 @@
     }).filter(o => o.title);
   }
 
-  /* แยก status: soon / past / normal — ใช้คอลัมน์ status ใน Sheet
-     ถ้าไม่ใส่จะเป็นปกติ (สีชมพู) */
-  function statusClass(s) {
+  /* ============ ระบบ parse วันที่ ============
+     รองรับ 2 รูปแบบใน Sheet:
+       1) คอลัมน์ date_iso เช่น "2026-05-26" (ค.ศ.) แม่นยำที่สุด
+       2) คอลัมน์ date ภาษาไทย เช่น "26 พ.ค. 2569" หรือ "26 พ.ค. 69"
+     ถ้า parse ไม่สำเร็จ → คืน null และใช้ when_label/status ตามที่ใส่ใน Sheet
+  */
+  const THAI_MONTHS = {
+    'ม.ค':0,  'มค':0,  'มกราคม':0,
+    'ก.พ':1,  'กพ':1,  'กุมภา':1, 'กุมภาพันธ์':1,
+    'มี.ค':2, 'มีค':2, 'มีนา':2, 'มีนาคม':2,
+    'เม.ย':3, 'เมย':3, 'เมษา':3, 'เมษายน':3,
+    'พ.ค':4,  'พค':4,  'พฤษภา':4, 'พฤษภาคม':4,
+    'มิ.ย':5, 'มิย':5, 'มิถุนา':5, 'มิถุนายน':5,
+    'ก.ค':6,  'กค':6,  'กรกฎา':6, 'กรกฎาคม':6,
+    'ส.ค':7,  'สค':7,  'สิงหา':7, 'สิงหาคม':7,
+    'ก.ย':8,  'กย':8,  'กันยา':8, 'กันยายน':8,
+    'ต.ค':9,  'ตค':9,  'ตุลา':9, 'ตุลาคม':9,
+    'พ.ย':10, 'พย':10, 'พฤศจิ':10, 'พฤศจิกายน':10,
+    'ธ.ค':11, 'ธค':11, 'ธันวา':11, 'ธันวาคม':11
+  };
+
+  /* parse 1 ชิ้น (เช่น "26 พ.ค. 2569" หรือ "14 มิ.ย." ที่จะใช้ปีจากชิ้นหลัง) */
+  function parseOnePiece(piece, fallbackYear, fallbackMonth) {
+    const m = piece.match(/^(\d{1,2})\s*([ก-๙\.]+)?\s*(\d{2,4})?/);
+    if (!m) return null;
+
+    const day = parseInt(m[1], 10);
+    const monthRaw = (m[2] || '').replace(/\s+/g, '');
+    const yearRaw = m[3];
+
+    let month = -1;
+    if (monthRaw) {
+      for (const key in THAI_MONTHS) {
+        if (monthRaw.startsWith(key) || monthRaw === key + '.') {
+          month = THAI_MONTHS[key];
+          break;
+        }
+      }
+    } else if (fallbackMonth !== undefined) {
+      month = fallbackMonth;
+    }
+    if (month < 0) return null;
+
+    let year;
+    if (yearRaw) {
+      const y = parseInt(yearRaw, 10);
+      if (y > 2400) year = y - 543;
+      else if (y < 100) year = 2000 + y;
+      else year = y;
+    } else if (fallbackYear !== undefined) {
+      year = fallbackYear;
+    } else {
+      year = new Date().getFullYear();
+    }
+
+    const d = new Date(year, month, day);
+    return isNaN(d) ? null : d;
+  }
+
+  /* parse วันที่ — รองรับทั้งวันเดียวและช่วง คืน { start, end } (end=null ถ้าไม่มี) */
+  function parseDateRange(e) {
+    /* (1) ถ้า date_iso เป็น "2026-05-28~2026-06-14" หรือมีช่วงด้วย / */
+    const iso = String(e.date_iso || '').trim();
+    if (iso) {
+      const parts = iso.split(/\s*[~]\s*/);
+      const m1 = parts[0].match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+      if (m1) {
+        const start = new Date(+m1[1], +m1[2]-1, +m1[3]);
+        let end = null;
+        if (parts[1]) {
+          const m2 = parts[1].match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+          if (m2) end = new Date(+m2[1], +m2[2]-1, +m2[3]);
+        }
+        if (!isNaN(start)) return { start, end };
+      }
+    }
+
+    /* (2) parse จาก date ภาษาไทย */
+    const raw = String(e.date || '').trim();
+    if (!raw) return null;
+
+    /* แยกช่วงด้วย "–" หรือ "-" (ระหว่างเว้นวรรค) */
+    const rangeParts = raw.split(/\s+[–-]\s+/);
+
+    if (rangeParts.length === 1) {
+      /* วันเดียว เช่น "26 พ.ค. 2569" */
+      const d = parseOnePiece(rangeParts[0]);
+      return d ? { start: d, end: null } : null;
+    }
+
+    /* ช่วง — parse วันท้ายก่อน (เพราะมีปี+เดือนเต็ม) แล้วใช้ค่านั้นเป็น fallback ของวันแรก */
+    const endPiece = rangeParts[1].trim();
+    const endDate = parseOnePiece(endPiece);
+    if (!endDate) {
+      /* ถ้า parse วันท้ายไม่ได้ ลองอันแรก */
+      const startOnly = parseOnePiece(rangeParts[0].trim());
+      return startOnly ? { start: startOnly, end: null } : null;
+    }
+
+    /* parse วันแรก โดยใช้ปี/เดือนของวันท้ายเป็น fallback */
+    const startPiece = rangeParts[0].trim();
+    /* ดูว่าวันแรกมีเดือนของตัวเองหรือไม่ — ถ้า "21 – 27 เม.ย. 2569" วันแรกมีแต่เลขวัน */
+    const hasMonth = /[ก-๙]/.test(startPiece);
+    const startDate = parseOnePiece(
+      startPiece,
+      endDate.getFullYear(),
+      hasMonth ? undefined : endDate.getMonth()
+    );
+
+    return {
+      start: startDate || endDate,
+      end: endDate
+    };
+  }
+
+  function daysBetween(a, b) {
+    const da = new Date(a); da.setHours(0,0,0,0);
+    const db = new Date(b); db.setHours(0,0,0,0);
+    return Math.round((db - da) / 86400000);
+  }
+
+  /* ============ ระบบ status + label ============ */
+  function manualStatusClass(s) {
     const v = String(s || '').toLowerCase().trim();
     if (v === 'past' || v === 'ผ่านแล้ว' || v === 'ผ่าน') return 'past';
     if (v === 'soon' || v === 'เร็ว ๆ นี้' || v === 'ใกล้') return 'soon';
     return '';
   }
-  function statusLabel(s, fallback) {
-    const v = String(s || '').trim();
-    if (!v) return fallback || 'ติดตามประกาศ';
-    /* ถ้าเป็นคีย์เวิร์ดอังกฤษ แปลเป็นไทย */
-    const map = { past: 'ผ่านแล้ว', soon: 'เร็ว ๆ นี้' };
-    return map[v.toLowerCase()] || v;
+
+  /* คำนวณ status + label อัตโนมัติจากวันที่ (รองรับช่วงวัน)
+     กรณีต่าง ๆ:
+       - วันเดียว: ใช้วันนั้นเทียบกับวันนี้
+       - ช่วงวัน + ยังไม่เริ่ม: "อีก X วัน" (เริ่ม)
+       - ช่วงวัน + กำลังเปิด: "กำลังเปิด · เหลือ X วัน"
+       - ช่วงวัน + เลยปิดแล้ว: "ผ่านแล้ว"
+     ถ้าคน manual ตั้งใน Sheet → ใช้ของ Sheet override */
+  function computeStatus(e) {
+    const manualCls = manualStatusClass(e.status);
+    const manualLabel = String(e.when_label || '').trim();
+
+    const range = parseDateRange(e);
+    let autoCls = '';
+    let autoLabel = '';
+    let sortDays = null;  /* ใช้เรียง (วันที่ใกล้สุด) */
+
+    if (range) {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const daysToStart = daysBetween(today, range.start);
+      const daysToEnd = range.end ? daysBetween(today, range.end) : daysToStart;
+      sortDays = daysToStart;
+
+      if (daysToEnd < 0) {
+        /* จบไปแล้ว */
+        autoCls = 'past';
+        autoLabel = daysToEnd === -1 ? 'เมื่อวาน' : `ผ่านมา ${-daysToEnd} วัน`;
+      } else if (range.end && daysToStart <= 0 && daysToEnd >= 0) {
+        /* กำลังเปิด (อยู่ในช่วง) */
+        autoCls = 'soon';
+        autoLabel = daysToEnd === 0 ? 'วันสุดท้าย' : `กำลังเปิด · เหลือ ${daysToEnd} วัน`;
+        sortDays = 0;  /* ลำดับสูงสุด */
+      } else if (daysToStart === 0) {
+        autoCls = 'soon';
+        autoLabel = 'วันนี้';
+      } else if (daysToStart === 1) {
+        autoCls = 'soon';
+        autoLabel = 'พรุ่งนี้';
+      } else if (daysToStart <= 30) {
+        autoCls = 'soon';
+        autoLabel = `อีก ${daysToStart} วัน`;
+      } else {
+        autoCls = '';
+        autoLabel = `อีก ${daysToStart} วัน`;
+      }
+    }
+
+    const cls = manualCls || autoCls;
+    const label = manualLabel || autoLabel || 'ติดตามประกาศ';
+    return { cls, label, days: sortDays };
   }
 
-  /* จัดเรียง: ที่ยังไม่ผ่านขึ้นก่อน (soon → normal) แล้วค่อย past */
+  /* จัดเรียง: ใกล้ที่สุดขึ้นก่อน → past ล่างสุด
+     ถ้ามี days → เรียงตามเวลา ถ้าไม่มี → ใช้ลำดับใน Sheet */
   function sortEvents(list) {
-    const order = { soon: 0, '': 1, past: 2 };
-    return list.slice().sort((a, b) => {
-      const sa = statusClass(a.status);
-      const sb = statusClass(b.status);
-      return (order[sa] ?? 1) - (order[sb] ?? 1);
-    });
+    return list.slice().map((e, idx) => ({
+      e, idx, s: computeStatus(e)
+    })).sort((a, b) => {
+      const aPast = a.s.cls === 'past';
+      const bPast = b.s.cls === 'past';
+      if (aPast !== bPast) return aPast ? 1 : -1;  /* past ไปล่าง */
+      /* ทั้งคู่อยู่ฝั่งเดียวกัน → เรียงตามวัน */
+      const ad = a.s.days, bd = b.s.days;
+      if (ad !== null && bd !== null) {
+        return aPast ? bd - ad : ad - bd;  /* future: น้อย→มาก, past: ใหม่→เก่า */
+      }
+      if (ad !== null) return -1;
+      if (bd !== null) return 1;
+      return a.idx - b.idx;
+    }).map(x => ({ ...x.e, __status: x.s }));
   }
 
   function renderColumn(el, list, emptyMsg) {
@@ -162,8 +336,7 @@
       return;
     }
     el.innerHTML = sortEvents(list).map(e => {
-      const cls = statusClass(e.status);
-      const label = statusLabel(e.when_label || e.status, '');
+      const { cls, label } = e.__status;
       return `
         <div class="tl-item card ${cls === 'past' ? 'done' : ''}">
           <span class="pill-when ${cls}">${escapeHtml(label)}</span>
