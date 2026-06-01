@@ -90,7 +90,18 @@
   }
   .hall-foot .ig-link:hover { color:var(--pink-deep); text-decoration:underline; }
 
+  /* hero row: title ซ้าย, ปุ่มเสนอชื่อขวา */
+  .hof-hero-row {
+    display:flex; align-items:flex-start; justify-content:space-between;
+    gap:24px; flex-wrap:wrap;
+  }
+  .hof-hero-text { flex:1; min-width:260px; }
+  .hof-submit-btn { flex-shrink:0; margin-top:8px; white-space:nowrap; }
+
   @media (max-width:880px){ .hall-grid{ grid-template-columns:repeat(2,1fr); gap:14px; } }
+  @media (max-width:640px){
+    .hof-submit-btn { width:100%; justify-content:center; margin-top:4px; }
+  }
   @media (max-width:560px){
     .hall-grid{ grid-template-columns:1fr; gap:12px; }
     .hall-head{ padding:14px 16px 10px; }
@@ -119,8 +130,13 @@
 <section class="page-hero">
   <div class="wrap">
     <div class="crumb reveal"><a href="index.html">หน้าแรก</a> / Hall of Fame</div>
-    <h1 class="reveal">Hall of <span style="color:var(--gold-deep)">Fame</span></h1>
-    <p class="reveal">รวมความภาคภูมิใจของชาวราชโบริกานุเคราะห์ — รางวัล การแข่งขัน และผลงานเด่นของนักเรียนในทุกด้าน ทั้งวิชาการ กีฬา ศิลปะ และกิจกรรม</p>
+    <div class="hof-hero-row">
+      <div class="hof-hero-text">
+        <h1 class="reveal">Hall of <span style="color:var(--gold-deep)">Fame</span></h1>
+        <p class="reveal">รวมความภาคภูมิใจของชาวราชโบริกานุเคราะห์ — รางวัล การแข่งขัน และผลงานเด่นของนักเรียนในทุกด้าน ทั้งวิชาการ กีฬา ศิลปะ และกิจกรรม</p>
+      </div>
+      <a href="https://forms.gle/x8GxQNVREQ3RCJjR7" target="_blank" rel="noopener" class="btn btn-primary hof-submit-btn reveal">เสนอชื่อเข้า Hall of Fame →</a>
+    </div>
   </div>
 </section>
 
@@ -129,10 +145,6 @@
     <div class="filter-row reveal" id="filterRow"></div>
     <div class="hall-grid" id="cardGrid">
       <div class="empty-note">กำลังโหลดข้อมูล…</div>
-    </div>
-    <div style="text-align:center;margin-top:40px;" class="reveal">
-      <p style="color:var(--grey);font-size:15px;margin-bottom:16px;">มีผลงานหรืออยากเสนอชื่อเพื่อนเข้า Hall of Fame?<br>กรอกฟอร์มพร้อมแนบหลักฐาน แล้วสภาจะตรวจสอบก่อนเผยแพร่</p>
-      <a href="https://forms.gle/x8GxQNVREQ3RCJjR7" target="_blank" rel="noopener" class="btn btn-primary">เสนอชื่อเข้า Hall of Fame →</a>
     </div>
   </div>
 </section>
