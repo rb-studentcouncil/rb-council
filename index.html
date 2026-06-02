@@ -6,6 +6,55 @@
 <title>สภานักเรียน โรงเรียนราชโบริกานุเคราะห์ | Ratchaborikanukroh Student Council</title>
 <meta name="description" content="เว็บไซต์อย่างเป็นทางการของสภานักเรียนโรงเรียนราชโบริกานุเคราะห์ (RB) ติดตามข่าวสาร กิจกรรม Hall of Fame และข้อมูลเรียนต่อ">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  /* === Live cards shared === */
+  .live-card { display:flex; flex-direction:column; height:100%; }
+  .live-card .meta-row {
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-top:auto; padding-top:12px;
+  }
+  .pill-when {
+    display:inline-block; font-family:var(--head); font-size:12px; font-weight:600;
+    color:var(--pink-deep); background:var(--pink-soft);
+    padding:3px 10px; border-radius:999px;
+  }
+  .pill-when.soon { color:var(--gold-deep); background:#FFF1DC; }
+  .pill-when.past { color:var(--grey); background:var(--line); }
+  .meta-date { font-size:13px; color:var(--grey); }
+
+  /* HoF mini card */
+  .hof-mini {
+    position:relative; background:var(--white); border:1px solid var(--line);
+    border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-sm);
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    display:flex; flex-direction:column;
+  }
+  .hof-mini:hover { transform:translateY(-4px); box-shadow:var(--shadow); border-color:var(--gold); }
+  .hof-mini-photo {
+    position:relative; width:100%; padding-bottom:60%;
+    background:linear-gradient(135deg, #FFF1DC, var(--lilac));
+    overflow:hidden;
+  }
+  .hof-mini-photo img,
+  .hof-mini-photo .ph {
+    position:absolute; inset:0;
+  }
+  .hof-mini-photo img { width:100%; height:100%; object-fit:cover; }
+  .hof-mini-photo .ph {
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-size:52px; color:var(--gold-deep); opacity:.5;
+  }
+  .hof-mini-body { padding:16px 18px; flex:1; display:flex; flex-direction:column; }
+  .hof-mini-body .tag { background:#FFF1DC; color:var(--gold-deep); }
+  .hof-mini-body h3 { font-family:var(--head); font-weight:700; font-size:16px; color:var(--charcoal); margin-bottom:6px; line-height:1.4; }
+  .hof-mini-body .who { font-size:13px; color:var(--grey); margin-top:auto; }
+
+  /* Empty/loading state */
+  .live-empty { color:var(--grey); font-size:14px; padding:18px 0; grid-column:1/-1; text-align:center; }
+
+  /* Stats - update */
+  .stat .small { font-size:11px; color:var(--grey); display:block; margin-top:2px; }
+</style>
 </head>
 <body>
 <div class="bg-grain"></div>
@@ -48,10 +97,49 @@
       <a href="find-your-future.html" class="btn btn-ghost">วางแผนเรียนต่อ</a>
     </div>
     <div class="stats reveal">
-      <div class="stat"><b>12</b><span>คณะกรรมการสภา</span></div>
-      <div class="stat"><b>24</b><span>นักเรียนใน Hall of Fame</span></div>
-      <div class="stat"><b>8</b><span>กิจกรรมภาคเรียนนี้</span></div>
+      <div class="stat"><b id="statCouncil">15</b><span>คณะกรรมการสภา</span></div>
+      <div class="stat"><b id="statHof">—</b><span>ผลงานใน Hall of Fame</span></div>
+      <div class="stat"><b id="statEvents">—</b><span>กิจกรรมเร็ว ๆ นี้</span></div>
       <div class="stat"><b>2569</b><span>ปีการศึกษา</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- UPCOMING EVENTS (live from calendar sheets) -->
+<section style="background:var(--pink-tint);">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><h2>🗓 กิจกรรมเร็ว ๆ นี้</h2><p>เดดไลน์และวันสำคัญที่ใกล้จะถึง</p></div>
+      <a href="calendar.html" class="sec-link">ดูทั้งหมด →</a>
+    </div>
+    <div class="grid grid-3" id="upcomingGrid">
+      <div class="live-empty">กำลังโหลด…</div>
+    </div>
+  </div>
+</section>
+
+<!-- OPPORTUNITIES (live from find-your-future sheet) -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><h2>🌟 โอกาสล่าสุด</h2><p>ค่าย ทุน กิจกรรม ที่กำลังเปิดรับ</p></div>
+      <a href="find-your-future.html" class="sec-link">ดูทั้งหมด →</a>
+    </div>
+    <div class="grid grid-3" id="oppGrid">
+      <div class="live-empty">กำลังโหลด…</div>
+    </div>
+  </div>
+</section>
+
+<!-- HALL OF FAME (live) -->
+<section style="background:var(--pink-tint);">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><h2>🏆 Hall of Fame ล่าสุด</h2><p>ผลงานที่ภาคภูมิใจของชาว RB</p></div>
+      <a href="hall-of-fame.html" class="sec-link">ดูทั้งหมด →</a>
+    </div>
+    <div class="grid grid-3" id="hofGrid">
+      <div class="live-empty">กำลังโหลด…</div>
     </div>
   </div>
 </section>
@@ -60,30 +148,15 @@
 <section>
   <div class="wrap">
     <div class="sec-head reveal">
-      <div><h2>นักเรียนต้องการอะไร กดเข้าทางนั้นได้เลย</h2><p>จัดข้อมูลตามงานที่ใช้จริง</p></div>
+      <div><h2>เข้าหน้าที่ต้องการได้ที่นี่</h2><p>ทุกบริการของสภานักเรียน รวมในที่เดียว</p></div>
     </div>
     <div class="grid grid-3">
-      <a href="council.html" class="card reveal"><span class="tag">เกี่ยวกับเรา</span><h3>สภานักเรียน</h3><p>โครงสร้าง คณะกรรมการ วิสัยทัศน์ และผลงานของสภานักเรียนชุดปัจจุบัน</p></a>
-      <a href="hall-of-fame.html" class="card reveal"><span class="tag gold">Hall of Fame</span><h3>คนเก่ง RB</h3><p>รวมความสำเร็จ รางวัล และผลงานเด่นของนักเรียนราชโบริกานุเคราะห์</p></a>
-      <a href="find-your-future.html" class="card reveal"><span class="tag">เรียนต่อ</span><h3>Find Your Future</h3><p>ข้อมูล TCAS คณะ มหาวิทยาลัย และคำแนะนำการทำพอร์ตจากรุ่นพี่</p></a>
-      <a href="calendar.html" class="card reveal"><span class="tag">กำหนดการ</span><h3>ปฏิทินวันสำคัญ</h3><p>วันสอบ เดดไลน์ TCAS กิจกรรมโรงเรียน และวันหยุดที่ควรรู้</p></a>
-      <a href="schedule.html" class="card reveal"><span class="tag">ตารางเรียน</span><h3>ตารางเรียนแต่ละระดับชั้น</h3><p>ดูตารางเรียนของแต่ละห้อง พร้อมคาบกิจกรรมชุมนุม</p></a>
-      <a href="council.html#contact" class="card reveal"><span class="tag">ติดต่อ</span><h3>ส่งเรื่องถึงสภา</h3><p>แจ้งปัญหา เสนอไอเดีย หรือฝากความคิดเห็นถึงคณะกรรมการสภานักเรียน</p></a>
-    </div>
-  </div>
-</section>
-
-<!-- LATEST NEWS / ACTIVITIES -->
-<section style="background:var(--pink-tint);">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div><h2>ข่าวและกิจกรรมล่าสุด</h2><p>ประกาศที่นักเรียนควรเห็นก่อน</p></div>
-      <a href="calendar.html" class="sec-link">ดูทั้งหมด →</a>
-    </div>
-    <div class="grid grid-3">
-      <article class="card reveal"><span class="tag">กิจกรรม</span><h3>ค่ายผู้นำสภานักเรียน RB ครั้งที่ 1</h3><p>เปิดรับสมัครนักเรียนที่สนใจพัฒนาทักษะความเป็นผู้นำและการทำงานเป็นทีม</p><div class="date">20 พ.ค. 2569</div></article>
-      <article class="card reveal"><span class="tag">ประชาสัมพันธ์</span><h3>ลงทะเบียนกิจกรรมชุมนุม ภาคเรียนที่ 1</h3><p>นักเรียนทุกระดับชั้นลงทะเบียนเลือกชุมนุมได้ในคาบที่ 8 วันพฤหัสบดี</p><div class="date">18 พ.ค. 2569</div></article>
-      <article class="card reveal"><span class="tag">ประชาสัมพันธ์</span><h3>แนวปฏิบัติการแต่งกายประจำวัน</h3><p>ทบทวนระเบียบการแต่งกายของนักเรียนราชโบริกานุเคราะห์ในแต่ละวัน</p><div class="date">14 พ.ค. 2569</div></article>
+      <a href="council.html" class="card reveal"><span class="tag">เกี่ยวกับเรา</span><h3>สภานักเรียน</h3><p>คณะกรรมการสภานักเรียนชุดปัจจุบัน พร้อมรายชื่อแยกตามฝ่าย</p></a>
+      <a href="hall-of-fame.html" class="card reveal"><span class="tag gold">Hall of Fame</span><h3>คนเก่ง RB</h3><p>รวมความสำเร็จ รางวัล และผลงานเด่นของนักเรียน RB</p></a>
+      <a href="find-your-future.html" class="card reveal"><span class="tag">เรียนต่อ</span><h3>Find Your Future</h3><p>ค่าย ทุน กิจกรรม โอกาสเรียนต่อสำหรับชาว RB</p></a>
+      <a href="calendar.html" class="card reveal"><span class="tag">กำหนดการ</span><h3>ปฏิทินวันสำคัญ</h3><p>วันสอบ เดดไลน์ TCAS กิจกรรมโรงเรียน รวมในที่เดียว</p></a>
+      <a href="schedule.html" class="card reveal"><span class="tag">ตารางเรียน</span><h3>ตารางเรียนแต่ละชั้น</h3><p>เปิดตารางเรียนของแต่ละห้องจากระบบของโรงเรียน</p></a>
+      <a href="https://www.instagram.com/studentcouncil_rb/" target="_blank" class="card reveal"><span class="tag">ติดตาม</span><h3>Instagram @studentcouncil_rb</h3><p>ข่าวสาร กิจกรรม และเบื้องหลังของสภานักเรียน</p></a>
     </div>
   </div>
 </section>
@@ -116,5 +189,301 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script>
+(function () {
+  /* ============================================================
+     CONFIG — ใส่ลิงก์ Google Sheets CSV เดียวกับหน้าอื่น
+     แก้ที่นี่ที่เดียว ทั้งหน้าแรกจะดึงข้อมูล live ตามหน้าจริง
+     ============================================================ */
+  const TCAS_CSV_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAOZ2G00rVq18J7o7slPlQLkxneMOh019FXniOUcoyFzLjbh7JVGWo2ygG8PE2L6Hft2a7abnXvUz5/pub?gid=0&single=true&output=csv';
+  const SCHOOL_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAOZ2G00rVq18J7o7slPlQLkxneMOh019FXniOUcoyFzLjbh7JVGWo2ygG8PE2L6Hft2a7abnXvUz5/pub?gid=1736351558&single=true&output=csv';
+  const FYF_CSV_URL    = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtsxhWsNKA8uUKN3DDQlrm4KNbcfTjsFMhEkrflXOjLmh4PP8yrXidn-n-8ZUtTGSl_ADcKwKyX90_/pub?gid=0&single=true&output=csv';
+  const HOF_CSV_URL    = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRIqamRbAT_n4bKekmiLQJrekVUqt-NZmqMtJmIHkawKIFlWeZAjkH3XheVRGGBx5U3cJxVXAzMNPxb/pub?gid=0&single=true&output=csv';
+
+  /* ============================================================
+     Helper: escape / CSV parser / date parser (เหมือนหน้าอื่น)
+     ============================================================ */
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = '', inQ = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i], n = text[i+1];
+      if (inQ) {
+        if (c === '"' && n === '"') { field += '"'; i++; }
+        else if (c === '"') inQ = false;
+        else field += c;
+      } else {
+        if (c === '"') inQ = true;
+        else if (c === ',') { row.push(field); field = ''; }
+        else if (c === '\r') {}
+        else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+        else field += c;
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows;
+  }
+  function csvToEntries(text) {
+    const rows = parseCSV(text).filter(r => r.some(c => c.trim() !== ''));
+    if (rows.length < 2) return [];
+    const headers = rows[0].map(h => h.trim().toLowerCase());
+    return rows.slice(1).map(r => {
+      const o = {};
+      headers.forEach((h, idx) => { o[h] = (r[idx] || '').trim(); });
+      return o;
+    });
+  }
+
+  const THAI_MONTHS = {
+    'ม.ค':0,'มค':0,'มกราคม':0,'ก.พ':1,'กพ':1,'กุมภา':1,'กุมภาพันธ์':1,
+    'มี.ค':2,'มีค':2,'มีนา':2,'มีนาคม':2,'เม.ย':3,'เมย':3,'เมษา':3,'เมษายน':3,
+    'พ.ค':4,'พค':4,'พฤษภา':4,'พฤษภาคม':4,'มิ.ย':5,'มิย':5,'มิถุนา':5,'มิถุนายน':5,
+    'ก.ค':6,'กค':6,'กรกฎา':6,'กรกฎาคม':6,'ส.ค':7,'สค':7,'สิงหา':7,'สิงหาคม':7,
+    'ก.ย':8,'กย':8,'กันยา':8,'กันยายน':8,'ต.ค':9,'ตค':9,'ตุลา':9,'ตุลาคม':9,
+    'พ.ย':10,'พย':10,'พฤศจิ':10,'พฤศจิกายน':10,'ธ.ค':11,'ธค':11,'ธันวา':11,'ธันวาคม':11
+  };
+  function parseOnePiece(piece, fY, fM) {
+    const m = piece.match(/^(\d{1,2})\s*([ก-๙\.]+)?\s*(\d{2,4})?/);
+    if (!m) return null;
+    const day = +m[1];
+    const monthRaw = (m[2]||'').replace(/\s+/g,'');
+    const yearRaw = m[3];
+    let month = -1;
+    if (monthRaw) {
+      for (const k in THAI_MONTHS) {
+        if (monthRaw.startsWith(k) || monthRaw === k + '.') { month = THAI_MONTHS[k]; break; }
+      }
+    } else if (fM !== undefined) month = fM;
+    if (month < 0) return null;
+    let year;
+    if (yearRaw) {
+      const y = +yearRaw;
+      if (y > 2400) year = y - 543;
+      else if (y < 100) year = 2000 + y;
+      else year = y;
+    } else if (fY !== undefined) year = fY;
+    else year = new Date().getFullYear();
+    const d = new Date(year, month, day);
+    return isNaN(d) ? null : d;
+  }
+  function parseDateRange(e) {
+    const iso = String(e.date_iso || '').trim();
+    if (iso) {
+      const parts = iso.split(/\s*[~]\s*/);
+      const m1 = parts[0].match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+      if (m1) {
+        const start = new Date(+m1[1], +m1[2]-1, +m1[3]);
+        let end = null;
+        if (parts[1]) {
+          const m2 = parts[1].match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+          if (m2) end = new Date(+m2[1], +m2[2]-1, +m2[3]);
+        }
+        if (!isNaN(start)) return { start, end };
+      }
+    }
+    const raw = String(e.date || '').trim();
+    if (!raw) return null;
+    const parts = raw.split(/\s+[–-]\s+/);
+    if (parts.length === 1) {
+      const d = parseOnePiece(parts[0]);
+      return d ? { start:d, end:null } : null;
+    }
+    const endDate = parseOnePiece(parts[1].trim());
+    if (!endDate) {
+      const so = parseOnePiece(parts[0].trim());
+      return so ? { start:so, end:null } : null;
+    }
+    const startPiece = parts[0].trim();
+    const hasMonth = /[ก-๙]/.test(startPiece);
+    const startDate = parseOnePiece(startPiece, endDate.getFullYear(), hasMonth ? undefined : endDate.getMonth());
+    return { start: startDate || endDate, end: endDate };
+  }
+  function daysBetween(a, b) {
+    const da = new Date(a); da.setHours(0,0,0,0);
+    const db = new Date(b); db.setHours(0,0,0,0);
+    return Math.round((db - da) / 86400000);
+  }
+  function computeStatus(e) {
+    const range = parseDateRange(e);
+    if (!range) return { cls:'', label:'ติดตามประกาศ', days:null };
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dS = daysBetween(today, range.start);
+    const dE = range.end ? daysBetween(today, range.end) : dS;
+    let sortDays = dS, cls = '', label = '';
+    if (dE < 0) { cls='past'; label = dE===-1 ? 'เมื่อวาน' : `ผ่านมา ${-dE} วัน`; }
+    else if (range.end && dS <= 0 && dE >= 0) {
+      cls='soon'; label = dE===0 ? 'วันสุดท้าย' : `กำลังเปิด · เหลือ ${dE} วัน`; sortDays = 0;
+    } else if (dS === 0) { cls='soon'; label='วันนี้'; }
+    else if (dS === 1) { cls='soon'; label='พรุ่งนี้'; }
+    else if (dS <= 30) { cls='soon'; label=`อีก ${dS} วัน`; }
+    else { cls=''; label=`อีก ${dS} วัน`; }
+    return { cls, label, days: sortDays };
+  }
+
+  /* คัดเอาที่ยังไม่ผ่าน + เรียงใกล้สุดก่อน */
+  function pickUpcoming(entries, n) {
+    return entries
+      .map(e => ({ e, s: computeStatus(e) }))
+      .filter(x => x.s.cls !== 'past')
+      .sort((a,b) => {
+        const ad = a.s.days, bd = b.s.days;
+        if (ad !== null && bd !== null) return ad - bd;
+        if (ad !== null) return -1;
+        if (bd !== null) return 1;
+        return 0;
+      })
+      .slice(0, n)
+      .map(x => ({ ...x.e, __s: x.s }));
+  }
+
+  /* ============================================================
+     (1) Upcoming events — merge TCAS + School, pick top 3
+     ============================================================ */
+  function renderUpcoming(entries, kind) {
+    const grid = document.getElementById('upcomingGrid');
+    grid.dataset.kind = grid.dataset.kind || '';
+    grid.dataset[kind] = '1';
+    /* รวมข้อมูลจาก 2 source */
+    window.__events = (window.__events || []).concat(entries);
+    /* รอครบทั้ง 2 source แล้วค่อย render เพื่อให้เรียงรวมกัน */
+    if (!grid.dataset.tcas || !grid.dataset.school) return;
+
+    const top = pickUpcoming(window.__events, 3);
+    /* update stat */
+    document.getElementById('statEvents').textContent = window.__events.filter(e => {
+      const s = computeStatus(e);
+      return s.cls !== 'past';
+    }).length;
+
+    if (!top.length) {
+      grid.innerHTML = '<div class="live-empty">ยังไม่มีกิจกรรมในช่วงนี้</div>';
+      return;
+    }
+    grid.innerHTML = top.map(e => {
+      const { cls, label } = e.__s;
+      return `
+        <a href="calendar.html" class="card live-card reveal in">
+          <span class="tag">กำหนดการ</span>
+          <h3>${esc(e.title)}</h3>
+          ${e.date ? `<p>${esc(e.date)}${e.location?' · '+esc(e.location):''}</p>` : ''}
+          <div class="meta-row">
+            <span class="pill-when ${cls}">${esc(label)}</span>
+          </div>
+        </a>`;
+    }).join('');
+  }
+
+  function loadCalendar(url, kind) {
+    if (!url || !url.trim()) {
+      document.getElementById('upcomingGrid').dataset[kind] = '1';
+      renderUpcoming([], kind);
+      return;
+    }
+    fetch(url).then(r => r.text()).then(text => {
+      renderUpcoming(csvToEntries(text), kind);
+    }).catch(() => {
+      renderUpcoming([], kind);
+    });
+  }
+
+  /* ============================================================
+     (2) Opportunities — top 3 ที่ยังเปิด
+     ============================================================ */
+  function loadFyf(url) {
+    const grid = document.getElementById('oppGrid');
+    if (!url || !url.trim()) {
+      grid.innerHTML = '<div class="live-empty">ยังไม่ได้ตั้ง Google Sheet</div>';
+      return;
+    }
+    fetch(url).then(r => r.text()).then(text => {
+      const entries = csvToEntries(text).filter(e => e.title);
+      const top = pickUpcoming(entries, 3);
+      if (!top.length) {
+        grid.innerHTML = '<div class="live-empty">ยังไม่มีโอกาสเปิดรับในช่วงนี้</div>';
+        return;
+      }
+      grid.innerHTML = top.map(e => {
+        const { cls, label } = e.__s;
+        return `
+          <a href="${e.link ? esc(e.link) : 'find-your-future.html'}"
+             ${e.link ? 'target="_blank" rel="noopener"' : ''}
+             class="card live-card reveal in">
+            <span class="tag">${esc(e.category || 'โอกาส')}</span>
+            <h3>${esc(e.title)}</h3>
+            ${e.detail ? `<p>${esc(e.detail)}</p>` : ''}
+            <div class="meta-row">
+              <span class="pill-when ${cls}">${esc(label)}</span>
+              ${e.date ? `<span class="meta-date">${esc(e.date)}</span>` : ''}
+            </div>
+          </a>`;
+      }).join('');
+    }).catch(() => {
+      grid.innerHTML = '<div class="live-empty">โหลดข้อมูลไม่สำเร็จ</div>';
+    });
+  }
+
+  /* ============================================================
+     (3) Hall of Fame — 3 ใบล่าสุด (เรียงตามปี desc)
+     ============================================================ */
+  function loadHof(url) {
+    const grid = document.getElementById('hofGrid');
+    if (!url || !url.trim()) {
+      grid.innerHTML = '<div class="live-empty">ยังไม่ได้ตั้ง Google Sheet</div>';
+      return;
+    }
+    fetch(url).then(r => r.text()).then(text => {
+      const entries = csvToEntries(text).filter(e => e.name || e.award);
+      document.getElementById('statHof').textContent = entries.length;
+      const top = entries.slice().sort((a,b) => {
+        const ya = parseInt(String(a.year).replace(/[^0-9]/g,''), 10);
+        const yb = parseInt(String(b.year).replace(/[^0-9]/g,''), 10);
+        return (isNaN(yb)?-Infinity:yb) - (isNaN(ya)?-Infinity:ya);
+      }).slice(0, 3);
+
+      if (!top.length) {
+        grid.innerHTML = '<div class="live-empty">ยังไม่มีผลงานในขณะนี้</div>';
+        return;
+      }
+      grid.innerHTML = top.map(e => {
+        let photo = String(e.photo || '').trim();
+        if (photo && !/^(https?:\/\/|data:|\/|images\/)/i.test(photo)) {
+          photo = 'images/hall/' + photo;
+        }
+        const firstChar = String(e.award || e.name || '?').trim().charAt(0) || '?';
+        const photoHtml = photo
+          ? `<img src="${esc(photo)}" alt="${esc(e.award)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+             <span class="ph" style="display:none;">${esc(firstChar)}</span>`
+          : `<span class="ph">${esc(firstChar)}</span>`;
+        const who = e.class ? esc(e.name)+' · '+esc(e.class) : esc(e.name);
+        return `
+          <a href="hall-of-fame.html" class="hof-mini reveal in">
+            <div class="hof-mini-photo">${photoHtml}</div>
+            <div class="hof-mini-body">
+              <span class="tag">${esc(e.category || 'ผลงาน')}</span>
+              <h3>${esc(e.award)}</h3>
+              <div class="who">${who}${e.year?' · '+esc(e.year):''}</div>
+            </div>
+          </a>`;
+      }).join('');
+    }).catch(() => {
+      grid.innerHTML = '<div class="live-empty">โหลดข้อมูลไม่สำเร็จ</div>';
+    });
+  }
+
+  /* ============================================================
+     Kick off all loads
+     ============================================================ */
+  loadCalendar(TCAS_CSV_URL,   'tcas');
+  loadCalendar(SCHOOL_CSV_URL, 'school');
+  loadFyf(FYF_CSV_URL);
+  loadHof(HOF_CSV_URL);
+})();
+</script>
 </body>
 </html>
