@@ -18,9 +18,36 @@
   .pill-when.soon { color:var(--gold-deep); background:#FFF1DC; }
   .pill-when.past { color:var(--grey); background:var(--line); }
   .col-head { font-family:var(--head); font-size:22px; margin-bottom:20px; color:var(--charcoal); }
+  .col-update {
+    font-family:var(--head); font-size:13px; font-weight:500;
+    color:var(--grey); margin-left:4px; white-space:nowrap;
+  }
   .empty-note { color:var(--grey); font-size:14px; padding:20px 0; }
   .load-error { background:#FFF1DC; border:1px solid #F0CF94; border-radius:var(--radius); padding:16px 18px; color:var(--gold-deep); font-size:13px; }
   .load-error b { display:block; margin-bottom:4px; color:var(--charcoal); font-family:var(--head); }
+
+  /* ===== Notes section ===== */
+  .notes-section {
+    background:var(--pink-soft);
+    border-radius:var(--radius);
+    padding:24px 28px;
+    margin-top:40px;
+    border:1px solid var(--lilac);
+  }
+  .notes-section h3 {
+    font-family:var(--head); font-size:18px; color:var(--charcoal);
+    margin-bottom:14px; display:flex; align-items:center; gap:8px;
+  }
+  .notes-list { list-style:none; padding:0; margin:0; }
+  .notes-list li {
+    font-size:14px; color:var(--ink); line-height:1.7;
+    padding:6px 0; padding-left:20px; position:relative;
+  }
+  .notes-list li::before {
+    content:'•'; position:absolute; left:6px; color:var(--pink-deep); font-weight:bold;
+  }
+  .notes-list li:not(:last-child) { border-bottom:1px dashed var(--lilac); }
+  .notes-empty { color:var(--grey); font-size:13px; font-style:italic; }
 </style>
 </head>
 <body>
@@ -51,17 +78,23 @@
   <div class="wrap">
     <div class="grid grid-2">
       <div class="reveal">
-        <h2 class="col-head">🎓 TCAS / สอบ / ทุน</h2>
+        <h2 class="col-head">TCAS <span class="col-update" id="updateTcas"></span></h2>
         <div class="timeline" id="colTcas">
           <div class="empty-note">กำลังโหลด…</div>
         </div>
       </div>
       <div class="reveal">
-        <h2 class="col-head">🏫 กิจกรรมโรงเรียน</h2>
+        <h2 class="col-head">🏫 กิจกรรมโรงเรียน <span class="col-update" id="updateSchool"></span></h2>
         <div class="timeline" id="colSchool">
           <div class="empty-note">กำลังโหลด…</div>
         </div>
       </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="notes-section reveal" id="notesSection" style="display:none;">
+      <h3>📝 หมายเหตุ</h3>
+      <ul class="notes-list" id="notesList"></ul>
     </div>
   </div>
 </section>
@@ -87,6 +120,9 @@
      ============================================================ */
   const TCAS_CSV_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAOZ2G00rVq18J7o7slPlQLkxneMOh019FXniOUcoyFzLjbh7JVGWo2ygG8PE2L6Hft2a7abnXvUz5/pub?gid=0&single=true&output=csv';
   const SCHOOL_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAOZ2G00rVq18J7o7slPlQLkxneMOh019FXniOUcoyFzLjbh7JVGWo2ygG8PE2L6Hft2a7abnXvUz5/pub?gid=1736351558&single=true&output=csv';
+  /* ชีต Notes — ใส่ลิงก์ CSV ของชีตหมายเหตุ (ในไฟล์เดียวกัน gid ใหม่)
+     ถ้าเว้นว่างไว้จะไม่แสดงส่วนหมายเหตุ */
+  const NOTES_CSV_URL  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAOZ2G00rVq18J7o7slPlQLkxneMOh019FXniOUcoyFzLjbh7JVGWo2ygG8PE2L6Hft2a7abnXvUz5/pub?gid=959627711&single=true&output=csv';
   /* ============================================================ */
 
   const colTcas = document.getElementById('colTcas');
@@ -364,6 +400,63 @@
 
   loadColumn(colTcas,   TCAS_CSV_URL,   'ยังไม่ได้ตั้ง Google Sheet สำหรับ TCAS');
   loadColumn(colSchool, SCHOOL_CSV_URL, 'ยังไม่ได้ตั้ง Google Sheet สำหรับกิจกรรมโรงเรียน');
+
+  /* ========= โหลดหมายเหตุ + วันที่อัปเดต (Notes) =========
+     รองรับชีตที่มีหลายคอลัมน์: note, update_tcas, update_school
+     ระบบจะอ่านทุกค่าใน update_tcas / update_school และเอาค่าล่าสุดมาแสดง
+  */
+  function loadNotes(url) {
+    if (!url || !url.trim()) return;
+    const sect = document.getElementById('notesSection');
+    const list = document.getElementById('notesList');
+    const updTcas = document.getElementById('updateTcas');
+    const updSchool = document.getElementById('updateSchool');
+
+    fetch(url)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(text => {
+        const rows = parseCSV(text).filter(r => r.some(c => c.trim() !== ''));
+        if (!rows.length) return;
+
+        /* ดูว่ามี header หรือไม่ */
+        const firstRow = rows[0].map(c => c.trim().toLowerCase());
+        const noteCol     = firstRow.findIndex(h => h === 'note' || h === 'notes' || h === 'หมายเหตุ');
+        const tcasCol     = firstRow.findIndex(h => h === 'update_tcas' || h === 'tcas_update');
+        const schoolCol   = firstRow.findIndex(h => h === 'update_school' || h === 'school_update');
+        const hasHeader   = noteCol >= 0 || tcasCol >= 0 || schoolCol >= 0;
+
+        let notes = [], tcasDate = '', schoolDate = '';
+
+        if (hasHeader) {
+          const dataRows = rows.slice(1);
+          if (noteCol >= 0) {
+            notes = dataRows.map(r => (r[noteCol] || '').trim()).filter(Boolean);
+          }
+          /* เอาค่าล่าสุด (cell แรกที่ไม่ว่าง) */
+          if (tcasCol >= 0) {
+            tcasDate = dataRows.map(r => (r[tcasCol] || '').trim()).filter(Boolean)[0] || '';
+          }
+          if (schoolCol >= 0) {
+            schoolDate = dataRows.map(r => (r[schoolCol] || '').trim()).filter(Boolean)[0] || '';
+          }
+        } else {
+          /* ไม่มี header → ใช้คอลัมน์ A เป็น note */
+          notes = rows.map(r => (r[0] || '').trim()).filter(Boolean);
+        }
+
+        /* แสดงวันที่อัปเดต */
+        if (tcasDate) updTcas.textContent = `(อัปเดตข้อมูลล่าสุด ${tcasDate})`;
+        if (schoolDate) updSchool.textContent = `(อัปเดตข้อมูลล่าสุด ${schoolDate})`;
+
+        /* แสดงหมายเหตุ */
+        if (notes.length) {
+          list.innerHTML = notes.map(n => `<li>${escapeHtml(n)}</li>`).join('');
+          sect.style.display = 'block';
+        }
+      })
+      .catch(() => { /* silent */ });
+  }
+  loadNotes(NOTES_CSV_URL);
 })();
 </script>
 </body>
