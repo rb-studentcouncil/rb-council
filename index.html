@@ -52,8 +52,6 @@
   /* Empty/loading state */
   .live-empty { color:var(--grey); font-size:14px; padding:18px 0; grid-column:1/-1; text-align:center; }
 
-  /* Stats - update */
-  .stat .small { font-size:11px; color:var(--grey); display:block; margin-top:2px; }
 </style>
 </head>
 <body>
@@ -92,12 +90,6 @@
     <span class="eyebrow reveal">ปีการศึกษา 2569</span>
     <h1 class="title reveal">คณะกรรมการสภานักเรียน<br><span class="hl">ราชโบริกานุเคราะห์</span></h1>
     <p class="lead reveal">ติดตามข่าวจากสภานักเรียน ดูกิจกรรมและวันสำคัญ ชมผลงานเพื่อน ๆ ใน Hall of Fame และวางแผนเรียนต่อกับ Find Your Future — ครบในที่เดียว</p>
-    <div class="stats reveal">
-      <div class="stat"><b id="statCouncil">15</b><span>คณะกรรมการสภา</span></div>
-      <div class="stat"><b id="statHof">—</b><span>ผลงานใน Hall of Fame</span></div>
-      <div class="stat"><b id="statEvents">—</b><span>กิจกรรมเร็ว ๆ นี้</span></div>
-      <div class="stat"><b>2569</b><span>ปีการศึกษา</span></div>
-    </div>
   </div>
 </section>
 
@@ -362,11 +354,6 @@
     if (!grid.dataset.tcas || !grid.dataset.school) return;
 
     const top = pickUpcoming(window.__events, 3);
-    /* update stat */
-    document.getElementById('statEvents').textContent = window.__events.filter(e => {
-      const s = computeStatus(e);
-      return s.cls !== 'past';
-    }).length;
 
     if (!top.length) {
       grid.innerHTML = '<div class="live-empty">ยังไม่มีกิจกรรมในช่วงนี้</div>';
@@ -448,7 +435,6 @@
     }
     fetch(url).then(r => r.text()).then(text => {
       const entries = csvToEntries(text).filter(e => e.name || e.award);
-      document.getElementById('statHof').textContent = entries.length;
       const top = entries.slice().sort((a,b) => {
         const ya = parseInt(String(a.year).replace(/[^0-9]/g,''), 10);
         const yb = parseInt(String(b.year).replace(/[^0-9]/g,''), 10);
