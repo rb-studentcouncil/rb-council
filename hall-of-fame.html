@@ -83,12 +83,17 @@
     font-family:var(--head); font-size:13px; font-weight:600;
     color:var(--gold-deep);
   }
-  .hall-foot .ig-link {
-    display:inline-flex; align-items:center; gap:5px;
-    font-family:var(--head); font-size:13px; font-weight:600;
-    color:var(--pink);
+  .hall-foot .contact-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--head); font-size:12px; font-weight:600;
+    color:#fff; background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+    padding:6px 14px; border-radius:999px;
+    transition:transform .15s ease, box-shadow .15s ease;
   }
-  .hall-foot .ig-link:hover { color:var(--pink-deep); text-decoration:underline; }
+  .hall-foot .contact-btn:hover {
+    transform:translateY(-1px);
+    box-shadow:0 6px 14px -6px rgba(182,36,119,.6);
+  }
 
   /* hero row: title ซ้าย, ปุ่มเสนอชื่อขวา */
   .hof-hero-row {
@@ -248,9 +253,16 @@
       const who = e.class
         ? escapeHtml(e.name) + ' · ' + escapeHtml(e.class)
         : escapeHtml(e.name);
-      const ig = igHandle(e.igusername);
-      const igHtml = ig
-        ? `<a class="ig-link" href="https://www.instagram.com/${encodeURIComponent(ig)}/" target="_blank" rel="noopener">ig : ${escapeHtml(ig)}</a>`
+
+      /* ปุ่ม "ช่องทางติดต่อ" — ใช้คอลัมน์ link/contact ใน Sheet
+         ถ้าไม่มี link ลองใช้ igusername แทน (เผื่อข้อมูลเก่า) */
+      let contactUrl = String(e.link || e.contact || '').trim();
+      if (!contactUrl) {
+        const ig = igHandle(e.igusername);
+        if (ig) contactUrl = `https://www.instagram.com/${encodeURIComponent(ig)}/`;
+      }
+      const contactHtml = contactUrl
+        ? `<a class="contact-btn" href="${escapeHtml(contactUrl)}" target="_blank" rel="noopener">ช่องทางติดต่อ →</a>`
         : '';
 
       /* รูปภาพ: รองรับ 3 รูปแบบ
@@ -282,7 +294,7 @@
           </div>
           <div class="hall-foot">
             <span class="year">${e.year ? escapeHtml(e.year) : ''}</span>
-            ${igHtml || '<span></span>'}
+            ${contactHtml || '<span></span>'}
           </div>
         </article>`;
     }).join('');

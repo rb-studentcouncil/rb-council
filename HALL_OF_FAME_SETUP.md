@@ -68,7 +68,7 @@
 แถวแรกใส่หัวคอลัมน์ 8 ช่องนี้ (ตัวเล็กทั้งหมด สะกดตรงเป๊ะ):
 
 ```
-name | class | category | award | year | igusername | detail | photo
+name | class | category | award | year | detail | photo | link
 ```
 
 > ลำดับคอลัมน์สลับได้ ระบบอ่านตามชื่อหัว ไม่ใช่ตำแหน่ง
@@ -81,6 +81,15 @@ name | class | category | award | year | igusername | detail | photo
 - ถ้าไม่มีรูป ปล่อยว่าง ระบบจะใช้ตัวอักษรแรกของชื่อรางวัลเป็น placeholder อัตโนมัติ
 
 ก่อนใช้: อัปโหลดไฟล์รูปขึ้นโฟลเดอร์ `images/hall/` ใน repo ก่อน (push ขึ้น GitHub)
+
+**คอลัมน์ `link`** = ลิงก์ "ช่องทางติดต่อ" บนการ์ด ใส่ได้ทุกประเภท:
+- Instagram: `https://www.instagram.com/k1ttipon_/`
+- Facebook: `https://www.facebook.com/profile.php?id=...`
+- Line: `https://line.me/ti/p/...`
+- LinkedIn / Email / เว็บไซต์ส่วนตัว ฯลฯ
+- ถ้าไม่มี ปล่อยว่าง ปุ่มจะไม่ขึ้น
+
+(ถ้ามีคอลัมน์ `igusername` เก่าอยู่ ระบบยังรองรับเป็น fallback ให้อัตโนมัติ)
 
 ---
 
