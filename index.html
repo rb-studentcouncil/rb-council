@@ -305,9 +305,20 @@
     const db = new Date(b); db.setHours(0,0,0,0);
     return Math.round((db - da) / 86400000);
   }
+  const THAI_MONTH_SHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  function fmtThai(d) { return d ? `${d.getDate()} ${THAI_MONTH_SHORT[d.getMonth()]} ${d.getFullYear()+543}` : ''; }
+  function rangeToThai(r) {
+    if (!r) return '';
+    if (!r.end) return fmtThai(r.start);
+    if (r.start.getMonth()===r.end.getMonth() && r.start.getFullYear()===r.end.getFullYear())
+      return `${r.start.getDate()} – ${r.end.getDate()} ${THAI_MONTH_SHORT[r.end.getMonth()]} ${r.end.getFullYear()+543}`;
+    if (r.start.getFullYear()===r.end.getFullYear())
+      return `${r.start.getDate()} ${THAI_MONTH_SHORT[r.start.getMonth()]} – ${r.end.getDate()} ${THAI_MONTH_SHORT[r.end.getMonth()]} ${r.end.getFullYear()+543}`;
+    return `${fmtThai(r.start)} – ${fmtThai(r.end)}`;
+  }
   function computeStatus(e) {
     const range = parseDateRange(e);
-    if (!range) return { cls:'', label:'ติดตามประกาศ', days:null };
+    if (!range) return { cls:'', label:'ติดตามประกาศ', days:null, range:null };
     const today = new Date(); today.setHours(0,0,0,0);
     const dS = daysBetween(today, range.start);
     const dE = range.end ? daysBetween(today, range.end) : dS;
@@ -319,7 +330,7 @@
     else if (dS === 1) { cls='soon'; label='พรุ่งนี้'; }
     else if (dS <= 30) { cls='soon'; label=`อีก ${dS} วัน`; }
     else { cls=''; label=`อีก ${dS} วัน`; }
-    return { cls, label, days: sortDays };
+    return { cls, label, days: sortDays, range };
   }
 
   /* คัดเอาที่ยังไม่ผ่าน + เรียงใกล้สุดก่อน */
@@ -362,12 +373,13 @@
       return;
     }
     grid.innerHTML = top.map(e => {
-      const { cls, label } = e.__s;
+      const { cls, label, range } = e.__s;
+      const dateText = e.date || rangeToThai(range);
       return `
         <a href="calendar.html" class="card live-card reveal in">
           <span class="tag">กำหนดการ</span>
           <h3>${esc(e.title)}</h3>
-          ${e.date ? `<p>${esc(e.date)}${e.location?' · '+esc(e.location):''}</p>` : ''}
+          ${dateText ? `<p>${esc(dateText)}${e.location?' · '+esc(e.location):''}</p>` : (e.location?`<p>${esc(e.location)}</p>`:'')}
           <div class="meta-row">
             <span class="pill-when ${cls}">${esc(label)}</span>
           </div>
@@ -405,7 +417,8 @@
         return;
       }
       grid.innerHTML = top.map(e => {
-        const { cls, label } = e.__s;
+        const { cls, label, range } = e.__s;
+        const dateText = e.date || rangeToThai(range);
         return `
           <a href="${e.link ? esc(e.link) : 'find-your-future.html'}"
              ${e.link ? 'target="_blank" rel="noopener"' : ''}
@@ -415,7 +428,7 @@
             ${e.detail ? `<p>${esc(e.detail)}</p>` : ''}
             <div class="meta-row">
               <span class="pill-when ${cls}">${esc(label)}</span>
-              ${e.date ? `<span class="meta-date">${esc(e.date)}</span>` : ''}
+              ${dateText ? `<span class="meta-date">${esc(dateText)}</span>` : ''}
             </div>
           </a>`;
       }).join('');

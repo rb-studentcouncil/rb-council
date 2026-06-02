@@ -251,6 +251,21 @@
     return Math.round((db - da) / 86400000);
   }
 
+  /* แปลง Date → ไทย / range → ข้อความไทย */
+  const THAI_MONTH_SHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  function fmtThai(d) { return d ? `${d.getDate()} ${THAI_MONTH_SHORT[d.getMonth()]} ${d.getFullYear()+543}` : ''; }
+  function rangeToThai(r) {
+    if (!r) return '';
+    if (!r.end) return fmtThai(r.start);
+    if (r.start.getMonth() === r.end.getMonth() && r.start.getFullYear() === r.end.getFullYear()) {
+      return `${r.start.getDate()} – ${r.end.getDate()} ${THAI_MONTH_SHORT[r.end.getMonth()]} ${r.end.getFullYear()+543}`;
+    }
+    if (r.start.getFullYear() === r.end.getFullYear()) {
+      return `${r.start.getDate()} ${THAI_MONTH_SHORT[r.start.getMonth()]} – ${r.end.getDate()} ${THAI_MONTH_SHORT[r.end.getMonth()]} ${r.end.getFullYear()+543}`;
+    }
+    return `${fmtThai(r.start)} – ${fmtThai(r.end)}`;
+  }
+
   /* ============ คำนวณ status + label อัตโนมัติจากวันที่ ============
      กรณีต่าง ๆ:
        - วันเดียว: ใช้วันนั้นเทียบกับวันนี้
@@ -261,7 +276,7 @@
   */
   function computeStatus(e) {
     const range = parseDateRange(e);
-    if (!range) return { cls: '', label: 'ติดตามประกาศ', days: null };
+    if (!range) return { cls: '', label: 'ติดตามประกาศ', days: null, range: null };
 
     const today = new Date(); today.setHours(0,0,0,0);
     const daysToStart = daysBetween(today, range.start);
@@ -286,7 +301,7 @@
       cls = ''; label = `อีก ${daysToStart} วัน`;
     }
 
-    return { cls, label, days: sortDays };
+    return { cls, label, days: sortDays, range };
   }
 
   /* จัดเรียง: ใกล้ที่สุดขึ้นก่อน → past ล่างสุด
@@ -315,12 +330,13 @@
       return;
     }
     el.innerHTML = sortEvents(list).map(e => {
-      const { cls, label } = e.__status;
+      const { cls, label, range } = e.__status;
+      const dateText = e.date || rangeToThai(range);
       return `
         <div class="tl-item card ${cls === 'past' ? 'done' : ''}">
           <span class="pill-when ${cls}">${escapeHtml(label)}</span>
           <h3>${escapeHtml(e.title)}</h3>
-          ${e.date ? `<p>${escapeHtml(e.date)}${e.location ? ' · ' + escapeHtml(e.location) : ''}</p>` : ''}
+          ${dateText ? `<p>${escapeHtml(dateText)}${e.location ? ' · ' + escapeHtml(e.location) : ''}</p>` : (e.location ? `<p>${escapeHtml(e.location)}</p>` : '')}
         </div>`;
     }).join('');
   }

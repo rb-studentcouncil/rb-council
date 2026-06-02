@@ -238,9 +238,30 @@
     return Math.round((db - da) / 86400000);
   }
 
+  /* แปลง Date object → ข้อความไทย เช่น "26 พ.ค. 2569" */
+  const THAI_MONTH_SHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  function fmtThai(d) {
+    if (!d) return '';
+    return `${d.getDate()} ${THAI_MONTH_SHORT[d.getMonth()]} ${d.getFullYear() + 543}`;
+  }
+  /* สร้างข้อความวันที่จาก range (รองรับทั้งวันเดียวและช่วง) */
+  function rangeToThai(range) {
+    if (!range) return '';
+    if (!range.end) return fmtThai(range.start);
+    /* ช่วงเดือนเดียวกัน "21 – 27 เม.ย. 2569" */
+    if (range.start.getMonth() === range.end.getMonth() && range.start.getFullYear() === range.end.getFullYear()) {
+      return `${range.start.getDate()} – ${range.end.getDate()} ${THAI_MONTH_SHORT[range.end.getMonth()]} ${range.end.getFullYear() + 543}`;
+    }
+    /* ช่วงคนละเดือน/ปี "28 พ.ค. – 14 มิ.ย. 2569" */
+    if (range.start.getFullYear() === range.end.getFullYear()) {
+      return `${range.start.getDate()} ${THAI_MONTH_SHORT[range.start.getMonth()]} – ${range.end.getDate()} ${THAI_MONTH_SHORT[range.end.getMonth()]} ${range.end.getFullYear() + 543}`;
+    }
+    return `${fmtThai(range.start)} – ${fmtThai(range.end)}`;
+  }
+
   function computeStatus(e) {
     const range = parseDateRange(e);
-    if (!range) return { cls:'', label:'ติดตามประกาศ', days:null };
+    if (!range) return { cls:'', label:'ติดตามประกาศ', days:null, range:null };
     const today = new Date(); today.setHours(0,0,0,0);
     const daysToStart = daysBetween(today, range.start);
     const daysToEnd = range.end ? daysBetween(today, range.end) : daysToStart;
@@ -256,7 +277,7 @@
     else if (daysToStart === 1) { cls = 'soon'; label = 'พรุ่งนี้'; }
     else if (daysToStart <= 30) { cls = 'soon'; label = `อีก ${daysToStart} วัน`; }
     else { cls = ''; label = `อีก ${daysToStart} วัน`; }
-    return { cls, label, days: sortDays };
+    return { cls, label, days: sortDays, range };
   }
 
   /* ========= render ========= */
@@ -286,10 +307,12 @@
     }
 
     list.innerHTML = sorted.map(e => {
-      const { cls, label } = e.__status;
+      const { cls, label, range } = e.__status;
       const linkHtml = e.link
         ? `<a class="opp-link" href="${escapeHtml(e.link)}" target="_blank" rel="noopener">เปิดลิงก์ →</a>`
         : '';
+      /* ถ้าไม่มี date (ไทย) ให้สร้างจาก date_iso แทน */
+      const dateText = e.date || rangeToThai(range);
       return `
         <article class="opp-card ${cls === 'past' ? 'is-past' : ''}">
           <div class="opp-main">
@@ -300,7 +323,7 @@
           </div>
           <div class="opp-right">
             <span class="pill-when ${cls}">${escapeHtml(label)}</span>
-            ${e.date ? `<div class="opp-date">${escapeHtml(e.date)}</div>` : ''}
+            ${dateText ? `<div class="opp-date">${escapeHtml(dateText)}</div>` : ''}
           </div>
         </article>`;
     }).join('');
