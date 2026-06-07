@@ -62,27 +62,27 @@
 <!-- NAV -->
 <header class="nav">
   <div class="wrap nav-inner">
-    <a href="index.html" class="brand">
+    <a href="/" class="brand">
       <div class="brand-logo">RB</div>
       <div class="brand-text"><b>สภานักเรียน</b><span>Ratchaborikanukroh Student Council</span></div>
     </a>
     <nav class="nav-links">
-      <a href="index.html">หน้าแรก</a>
-      <a href="council.html">สภานักเรียน</a>
-      <a href="hall-of-fame.html">Hall of Fame</a>
-      <a href="find-your-future.html">Find Your Future</a>
-      <a href="calendar.html">ปฏิทิน</a>
-      <a href="schedule.html">ตารางเรียน</a>
+      <a href="/">หน้าแรก</a>
+      <a href="/council">สภานักเรียน</a>
+      <a href="/hall-of-fame">Hall of Fame</a>
+      <a href="/find-your-future">Find Your Future</a>
+      <a href="/calendar">ปฏิทิน</a>
+      <a href="/schedule">ตารางเรียน</a>
     </nav>
     <button class="burger" onclick="toggleMenu()" aria-label="menu"><span></span><span></span><span></span></button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="index.html">หน้าแรก</a>
-    <a href="council.html">สภานักเรียน</a>
-    <a href="hall-of-fame.html">Hall of Fame</a>
-    <a href="find-your-future.html">Find Your Future</a>
-    <a href="calendar.html">ปฏิทิน</a>
-    <a href="schedule.html">ตารางเรียน</a>
+    <a href="/">หน้าแรก</a>
+    <a href="/council">สภานักเรียน</a>
+    <a href="/hall-of-fame">Hall of Fame</a>
+    <a href="/find-your-future">Find Your Future</a>
+    <a href="/calendar">ปฏิทิน</a>
+    <a href="/schedule">ตารางเรียน</a>
   </div>
 </header>
 
@@ -100,7 +100,7 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <div><h2>กิจกรรมเร็ว ๆ นี้</h2></div>
-      <a href="calendar.html" class="sec-link">ดูทั้งหมด →</a>
+      <a href="/calendar" class="sec-link">ดูทั้งหมด →</a>
     </div>
     <div class="grid grid-3" id="upcomingGrid">
       <div class="live-empty">กำลังโหลด…</div>
@@ -113,7 +113,7 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <div><h2>ค่ายเร็วๆ นี้</h2></div>
-      <a href="find-your-future.html" class="sec-link">ดูทั้งหมด →</a>
+      <a href="/find-your-future" class="sec-link">ดูทั้งหมด →</a>
     </div>
     <div class="grid grid-3" id="oppGrid">
       <div class="live-empty">กำลังโหลด…</div>
@@ -126,7 +126,7 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <div><h2>Hall of Fame</h2></div>
-      <a href="hall-of-fame.html" class="sec-link">ดูทั้งหมด →</a>
+      <a href="/hall-of-fame" class="sec-link">ดูทั้งหมด →</a>
     </div>
     <div class="grid grid-3" id="hofGrid">
       <div class="live-empty">กำลังโหลด…</div>
@@ -144,11 +144,11 @@
       </div>
       <div>
         <h4>ลิงก์ด่วน</h4>
-        <a href="council.html">เกี่ยวกับสภา</a>
-        <a href="hall-of-fame.html">Hall of Fame</a>
-        <a href="find-your-future.html">Find Your Future</a>
-        <a href="calendar.html">ปฏิทิน</a>
-        <a href="schedule.html">ตารางเรียน</a>
+        <a href="/council">เกี่ยวกับสภา</a>
+        <a href="/hall-of-fame">Hall of Fame</a>
+        <a href="/find-your-future">Find Your Future</a>
+        <a href="/calendar">ปฏิทิน</a>
+        <a href="/schedule">ตารางเรียน</a>
       </div>
       <div>
         <h4>ติดตามเรา</h4>
@@ -348,7 +348,7 @@
       const { cls, label, range } = e.__s;
       const dateText = e.date || rangeToThai(range);
       return `
-        <a href="calendar.html" class="card live-card reveal in">
+        <a href="/calendar" class="card live-card reveal in">
           <span class="tag">กำหนดการ</span>
           <h3>${esc(e.title)}</h3>
           ${dateText ? `<p>${esc(dateText)}${e.location?' · '+esc(e.location):''}</p>` : (e.location?`<p>${esc(e.location)}</p>`:'')}
@@ -442,7 +442,7 @@
           : `<span class="ph">${esc(firstChar)}</span>`;
         const who = e.class ? esc(e.name)+' · '+esc(e.class) : esc(e.name);
         return `
-          <a href="hall-of-fame.html" class="hof-mini reveal in">
+          <a href="/hall-of-fame" class="hof-mini reveal in">
             <div class="hof-mini-photo">${photoHtml}</div>
             <div class="hof-mini-body">
               <span class="tag">${esc(e.category || 'ผลงาน')}</span>
