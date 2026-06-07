@@ -28,6 +28,33 @@
   .load-error { background:#FFF1DC; border:1px solid #F0CF94; border-radius:var(--radius); padding:16px 18px; color:var(--gold-deep); font-size:13px; }
   .load-error b { display:block; margin-bottom:4px; color:var(--charcoal); font-family:var(--head); }
 
+  /* ===== Mobile tab switcher (desktop ปกติ 2 columns) ===== */
+  .cal-tabs { display:none; }
+  @media (max-width:700px){
+    .cal-tabs {
+      display:flex; gap:8px; margin-bottom:24px;
+      background:var(--white); border:1px solid var(--line);
+      padding:4px; border-radius:999px;
+    }
+    .cal-tab {
+      flex:1; font-family:var(--head); font-size:14px; font-weight:600;
+      padding:10px 12px; border-radius:999px; border:0;
+      background:transparent; color:var(--ink); cursor:pointer;
+      transition:.18s; white-space:nowrap;
+    }
+    .cal-tab.active {
+      background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+      color:#fff;
+      box-shadow:var(--shadow-sm);
+    }
+    /* ซ่อนคอลัมน์ที่ไม่ active */
+    .grid.grid-2 { grid-template-columns:1fr; }
+    .grid.grid-2 > .reveal { display:none; }
+    .grid.grid-2 > .reveal.is-active { display:block; }
+    /* ซ่อน <h2> col-head บนมือถือ เพราะ tab บอกอยู่แล้ว */
+    .col-head { font-size:18px; margin-bottom:14px; }
+  }
+
   /* ===== Notes section ===== */
   .notes-section {
     background:var(--pink-soft);
@@ -78,14 +105,20 @@
 
 <section style="padding-top:24px;">
   <div class="wrap">
+    <!-- Mobile only: tab switcher -->
+    <div class="cal-tabs reveal" role="tablist">
+      <button class="cal-tab active" data-target="colWrapTcas" type="button">TCAS</button>
+      <button class="cal-tab" data-target="colWrapSchool" type="button">🏫 โรงเรียน</button>
+    </div>
+
     <div class="grid grid-2">
-      <div class="reveal">
+      <div class="reveal is-active" id="colWrapTcas">
         <h2 class="col-head">TCAS <span class="col-update" id="updateTcas"></span></h2>
         <div class="timeline" id="colTcas">
           <div class="empty-note">กำลังโหลด…</div>
         </div>
       </div>
-      <div class="reveal">
+      <div class="reveal" id="colWrapSchool">
         <h2 class="col-head">🏫 กิจกรรมโรงเรียน <span class="col-update" id="updateSchool"></span></h2>
         <div class="timeline" id="colSchool">
           <div class="empty-note">กำลังโหลด…</div>
@@ -402,6 +435,19 @@
 
   loadColumn(colTcas,   TCAS_CSV_URL,   'ยังไม่ได้ตั้ง Google Sheet สำหรับ TCAS');
   loadColumn(colSchool, SCHOOL_CSV_URL, 'ยังไม่ได้ตั้ง Google Sheet สำหรับกิจกรรมโรงเรียน');
+
+  /* ========= Mobile tab switcher ========= */
+  document.querySelectorAll('.cal-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      /* update active tab */
+      document.querySelectorAll('.cal-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      /* update active column */
+      document.querySelectorAll('.grid.grid-2 > .reveal').forEach(c => c.classList.remove('is-active'));
+      document.getElementById(target).classList.add('is-active');
+    });
+  });
 
   /* ========= โหลดหมายเหตุ + วันที่อัปเดต (Notes) =========
      รองรับชีตที่มีหลายคอลัมน์: note, update_tcas, update_school
