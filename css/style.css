@@ -149,7 +149,7 @@ h1.title .hl { color: var(--pink-deep); }
 .stat span { font-size: 13px; color: var(--grey); }
 
 /* ---------- Sections ---------- */
-section { padding: 56px 0; }
+section { padding: 32px 0; }
 .sec-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
 .sec-head h2 { font-family: var(--head); font-weight: 800; font-size: clamp(24px, 3.5vw, 34px); color: var(--charcoal); letter-spacing: -0.5px; }
 .sec-head p { color: var(--grey); font-size: 15px; margin-top: 4px; }
