@@ -89,8 +89,15 @@
   }
   @media (max-width:480px){
     .committee-grid{ grid-template-columns:repeat(2,1fr); gap:10px; }
-    .member-body{ padding:12px 12px 10px; height:106px; }
-    .member-card h3{ font-size:13px; -webkit-line-clamp:3; line-clamp:3; line-height:1.3; }
+    .member-body{ padding:12px 12px 10px; height:96px; }
+    /* ปิด line-clamp บนมือถือ — ใช้การแยกชื่อ-นามสกุลแทน */
+    .member-card h3{
+      font-size:13px; line-height:1.35;
+      display:block; -webkit-line-clamp:initial; line-clamp:initial; overflow:visible;
+    }
+    /* ชื่อ-นามสกุล ขึ้นคนละบรรทัดบนมือถือ */
+    .member-card h3 .n-first,
+    .member-card h3 .n-last { display:block; }
     .member-photo .initials{ font-size:38px; }
     .member-card .role{ font-size:10px; padding:3px 8px; margin-bottom:5px; }
   }
@@ -194,6 +201,15 @@
     return cleaned.charAt(0) || '?';
   }
 
+  /* แยกชื่อ-นามสกุล: ตัดที่ช่องว่างแรก
+     ใช้ใน <h3> แล้ว CSS บนมือถือจะให้ขึ้นบรรทัดใหม่ */
+  function splitName(name) {
+    const raw = String(name || '').trim();
+    const i = raw.indexOf(' ');
+    if (i < 0) return { first: raw, last: '' };
+    return { first: raw.slice(0, i), last: raw.slice(i + 1).trim() };
+  }
+
   function renderMembers(year) {
     const list = COMMITTEES[year] || [];
     grid.innerHTML = list.map(m => {
@@ -203,12 +219,16 @@
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
            <span class="initials" style="display:none;">${initials}</span>`
         : `<span class="initials">${initials}</span>`;
+      const { first, last } = splitName(m.name);
+      const nameHtml = last
+        ? `<span class="n-first">${escapeHtml(first)}</span> <span class="n-last">${escapeHtml(last)}</span>`
+        : escapeHtml(first);
       return `
         <div class="member-card${m.lead ? ' lead' : ''}">
           <div class="member-photo">${photo}</div>
           <div class="member-body">
             <span class="role">${escapeHtml(m.role)}</span>
-            <h3>${escapeHtml(m.name)}</h3>
+            <h3>${nameHtml}</h3>
           </div>
         </div>`;
     }).join('');
