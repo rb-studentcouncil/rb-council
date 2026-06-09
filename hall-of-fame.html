@@ -189,21 +189,21 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  /* แบ่งคำไทยด้วย Intl.Segmenter แล้ว wrap แต่ละคำใน <span class="thw">
-     CSS .thw { white-space: nowrap } บังคับ browser ไม่ให้ตัดกลางคำ
-     ระหว่าง <span> เป็น break opportunity ปกติ → ขึ้นบรรทัดใหม่ที่ขอบคำได้ */
-  const _thSeg = (typeof Intl !== 'undefined' && Intl.Segmenter)
-    ? new Intl.Segmenter('th', { granularity: 'word' })
-    : null;
+  /* แบ่งข้อความไทยตาม space + เครื่องหมายวรรคตอน เท่านั้น
+     ไม่ใช้ Intl.Segmenter เพราะ Chrome's Thai dictionary มักตัดผิด
+     เช่น "โครงงาน"→"โครง"+"งาน" หรือ "พระนิษฐาธิราชเจ้า"→"พระนิษฐาธิ"+"ราชเจ้า"
+     CSS .thw { white-space: nowrap } บังคับ browser ไม่ให้ตัดข้างใน
+     ถ้ายาวเกินจอ → overflow-wrap: anywhere ในกล่อง parent จะ fallback ตัดให้ */
+  const _SEP = /([\s(){}\[\]"'.,;:!?·—–\-]+)/;
   function escapeHtmlThai(s) {
     const raw = String(s == null ? '' : s);
-    if (!raw || !_thSeg) return escapeHtml(raw);
-    return [..._thSeg.segment(raw)].map(seg => {
-      const text = escapeHtml(seg.segment);
-      /* เว้นวรรค/เครื่องหมาย — ไม่ต้องห่อ ใช้ตรงๆ */
-      if (!seg.isWordLike) return text;
-      /* คำจริง — ห่อให้ห้ามตัดกลาง */
-      return `<span class="thw">${text}</span>`;
+    if (!raw) return '';
+    return raw.split(_SEP).map(part => {
+      if (!part) return '';
+      if (_SEP.test(part) && /^[\s(){}\[\]"'.,;:!?·—–\-]+$/.test(part)) {
+        return escapeHtml(part);
+      }
+      return `<span class="thw">${escapeHtml(part)}</span>`;
     }).join('');
   }
 

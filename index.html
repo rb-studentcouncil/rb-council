@@ -180,18 +180,18 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
-  /* แบ่งคำไทย wrap ใน <span class="thw"> (white-space:nowrap)
-     บังคับไม่ตัดกลางคำ — ขึ้นบรรทัดใหม่ระหว่างคำเท่านั้น */
-  const _thSeg = (typeof Intl !== 'undefined' && Intl.Segmenter)
-    ? new Intl.Segmenter('th', { granularity: 'word' })
-    : null;
+  /* แบ่งข้อความไทยตาม space + เครื่องหมายวรรคตอน เท่านั้น
+     ไม่ใช้ Intl.Segmenter เพราะตัดคำไทยพลาดบ่อย ("โครงงาน"→"โครง"+"งาน") */
+  const _SEP = /([\s(){}\[\]"'.,;:!?·—–\-]+)/;
   function escTh(s) {
     const raw = String(s == null ? '' : s);
-    if (!raw || !_thSeg) return esc(raw);
-    return [..._thSeg.segment(raw)].map(seg => {
-      const text = esc(seg.segment);
-      if (!seg.isWordLike) return text;
-      return `<span class="thw">${text}</span>`;
+    if (!raw) return '';
+    return raw.split(_SEP).map(part => {
+      if (!part) return '';
+      if (_SEP.test(part) && /^[\s(){}\[\]"'.,;:!?·—–\-]+$/.test(part)) {
+        return esc(part);
+      }
+      return `<span class="thw">${esc(part)}</span>`;
     }).join('');
   }
 

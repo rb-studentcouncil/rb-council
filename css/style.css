@@ -52,9 +52,15 @@ body {
 }
 
 /* Thai word wrapper — บังคับไม่ตัดกลางคำ
-   ใช้ร่วมกับ JS Intl.Segmenter ที่ห่อแต่ละคำใน <span class="thw"> */
+   JS แบ่งข้อความเป็น chunk ตาม space+punctuation แล้ว wrap ใน <span class="thw">
+   ถ้า chunk ยาวเกินกล่อง parent ใช้ overflow-wrap: anywhere จะ fallback ตัดให้ */
 .thw {
   white-space: nowrap;
+}
+.card p, .card h3, .hall-body .detail, .hall-body .who, .hall-head h3,
+.opp-card .detail, .opp-card h3 {
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 a { color: inherit; text-decoration: none; }
