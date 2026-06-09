@@ -139,8 +139,7 @@
         <div class="col-head-row">
           <h2 class="col-head">TCAS <span class="col-update" id="updateTcas"></span></h2>
           <div class="sub-filter" data-col="tcas">
-            <button type="button" class="sub-filter-btn active" data-filter="all">ทั้งหมด</button>
-            <button type="button" class="sub-filter-btn" data-filter="future">อนาคต</button>
+            <button type="button" class="sub-filter-btn active" data-filter="upcoming">ทั้งหมด</button>
             <button type="button" class="sub-filter-btn" data-filter="past">ผ่านมา</button>
           </div>
         </div>
@@ -152,8 +151,7 @@
         <div class="col-head-row">
           <h2 class="col-head">🏫 กิจกรรมโรงเรียน <span class="col-update" id="updateSchool"></span></h2>
           <div class="sub-filter" data-col="school">
-            <button type="button" class="sub-filter-btn active" data-filter="all">ทั้งหมด</button>
-            <button type="button" class="sub-filter-btn" data-filter="future">อนาคต</button>
+            <button type="button" class="sub-filter-btn active" data-filter="upcoming">ทั้งหมด</button>
             <button type="button" class="sub-filter-btn" data-filter="past">ผ่านมา</button>
           </div>
         </div>
@@ -459,13 +457,14 @@
 
   /* ========= State per column ========= */
   const colState = {
-    tcas:   { el: colTcas,   entries: [], filter: 'all', emptyMsg: 'ยังไม่ได้ตั้ง Google Sheet สำหรับ TCAS' },
-    school: { el: colSchool, entries: [], filter: 'all', emptyMsg: 'ยังไม่ได้ตั้ง Google Sheet สำหรับกิจกรรมโรงเรียน' }
+    tcas:   { el: colTcas,   entries: [], filter: 'upcoming', emptyMsg: 'ยังไม่ได้ตั้ง Google Sheet สำหรับ TCAS' },
+    school: { el: colSchool, entries: [], filter: 'upcoming', emptyMsg: 'ยังไม่ได้ตั้ง Google Sheet สำหรับกิจกรรมโรงเรียน' }
   };
 
-  /* กรอง entries ตาม filter mode */
+  /* กรอง entries ตาม filter mode
+     upcoming = ทุกอย่างที่ยังไม่ผ่าน (future + current + ไม่มีวัน)
+     past = ที่ผ่านไปแล้ว */
   function applyFilter(entries, mode) {
-    if (mode === 'all') return entries;
     return entries.filter(e => {
       const s = computeStatus(e);
       const isPast = s.cls === 'past';
@@ -482,9 +481,9 @@
     }
     const filtered = applyFilter(st.entries, st.filter);
     if (!filtered.length) {
-      const msg = st.filter === 'past' ? 'ยังไม่มีกิจกรรมที่ผ่านมา'
-                : st.filter === 'future' ? 'ยังไม่มีกิจกรรมที่กำลังจะมาถึง'
-                : 'ยังไม่มีกิจกรรม';
+      const msg = st.filter === 'past'
+        ? 'ยังไม่มีกิจกรรมที่ผ่านมา'
+        : 'ยังไม่มีกิจกรรมในตอนนี้';
       st.el.innerHTML = `<div class="empty-note">${escapeHtml(msg)}</div>`;
       return;
     }
