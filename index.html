@@ -412,7 +412,7 @@
   }
 
   /* ============================================================
-     (3) Hall of Fame — 3 ใบล่าสุด (เรียงตามปี desc)
+     (3) Hall of Fame — สุ่ม 3 ใบทุกครั้งที่เปิดหน้า
      ============================================================ */
   function loadHof(url) {
     const grid = document.getElementById('hofGrid');
@@ -422,11 +422,13 @@
     }
     fetch(url).then(r => r.text()).then(text => {
       const entries = csvToEntries(text).filter(e => e.name || e.award);
-      const top = entries.slice().sort((a,b) => {
-        const ya = parseInt(String(a.year).replace(/[^0-9]/g,''), 10);
-        const yb = parseInt(String(b.year).replace(/[^0-9]/g,''), 10);
-        return (isNaN(yb)?-Infinity:yb) - (isNaN(ya)?-Infinity:ya);
-      }).slice(0, 3);
+      /* สุ่ม 3 ใบ ทุกครั้งที่เปิดหน้า (Fisher-Yates shuffle) */
+      const shuffled = entries.slice();
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      const top = shuffled.slice(0, 3);
 
       if (!top.length) {
         grid.innerHTML = '<div class="live-empty">ยังไม่มีผลงานในขณะนี้</div>';
