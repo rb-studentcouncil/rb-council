@@ -74,13 +74,24 @@ name | class | category | award | year | detail | photo | link
 > ลำดับคอลัมน์สลับได้ ระบบอ่านตามชื่อหัว ไม่ใช่ตำแหน่ง
 > แต่ "ชื่อหัว" ต้องสะกดตรงตามนี้
 
-**คอลัมน์ `photo`** ใส่รูปได้ 3 แบบ:
-- **ชื่อไฟล์เฉยๆ**: `award-001.jpg` ← ระบบเติม `images/hall/` ให้อัตโนมัติ (ง่ายสุด)
-- **path เต็ม**: `images/hall/award-001.jpg`
-- **URL ภายนอก**: `https://example.com/image.jpg`
-- ถ้าไม่มีรูป ปล่อยว่าง ระบบจะใช้ตัวอักษรแรกของชื่อรางวัลเป็น placeholder อัตโนมัติ
+**คอลัมน์ `photo`** ใส่รูปได้ 5 แบบ:
 
-ก่อนใช้: อัปโหลดไฟล์รูปขึ้นโฟลเดอร์ `images/hall/` ใน repo ก่อน (push ขึ้น GitHub)
+### 🌟 แบบที่แนะนำ (ง่ายสุด) — Google Drive
+1. **อัปโหลดรูปขึ้น Google Drive** (โฟลเดอร์ของสภาก็ได้)
+2. คลิกขวาที่ไฟล์ → **Share** → ตั้งเป็น **"Anyone with the link"** (สำคัญมาก!)
+3. กด Copy link → จะได้ลิงก์เช่น `https://drive.google.com/file/d/1ABC.../view?usp=sharing`
+4. **วางลิงก์นี้ลงในคอลัมน์ `photo` ได้เลย** ระบบแปลงให้อัตโนมัติ
+
+### แบบอื่นๆ ที่รองรับ
+- **Drive file ID เปล่าๆ**: `1ABC...` (เฉพาะรหัส 25+ ตัวอักษร)
+- **ไฟล์ใน repo (ชื่อเฉยๆ)**: `award-001.jpg` → ระบบเติม `images/hall/` ให้
+- **Path เต็ม**: `images/hall/award-001.jpg`
+- **URL อื่นๆ**: `https://example.com/image.jpg`
+
+ถ้าไม่มีรูป ปล่อยว่าง — ระบบจะใช้ตัวอักษรแรกของชื่อรางวัลเป็น placeholder อัตโนมัติ
+
+> ⚠️ **Drive ต้อง public!** ถ้าไม่ตั้ง "Anyone with the link" รูปจะไม่ขึ้น
+> ⚠️ Drive อาจ rate-limit ถ้าเปิดเว็บเยอะมาก — ทางเลือกอื่นใช้ repo (`images/hall/`) เร็วและแน่นอนกว่า
 
 **คอลัมน์ `link`** = ลิงก์ "ช่องทางติดต่อ" บนการ์ด ใส่ได้ทุกประเภท:
 - Instagram: `https://www.instagram.com/k1ttipon_/`

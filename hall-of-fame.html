@@ -267,14 +267,28 @@
         ? `<a class="contact-btn" href="${escapeHtml(contactUrl)}" target="_blank" rel="noopener">ช่องทางติดต่อ →</a>`
         : '';
 
-      /* รูปภาพ: รองรับ 3 รูปแบบ
+      /* รูปภาพ: รองรับ 5 รูปแบบ
          1) ชื่อไฟล์เฉยๆ เช่น "myaward.jpg" → เติม prefix "images/hall/" ให้
          2) path เต็ม เช่น "images/hall/xxx.jpg" → ใช้ตรงๆ
-         3) URL ภายนอก เช่น "https://..." → ใช้ตรงๆ
-         ถ้าไม่มีรูป ใช้ตัวอักษรแรกของชื่อรางวัลเป็น placeholder */
+         3) Google Drive share link → แปลงเป็น thumbnail URL อัตโนมัติ
+            เช่น https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+         4) Google Drive file ID เปล่าๆ (รหัส ~30 ตัวอักษร) → แปลงเป็น thumbnail URL
+         5) URL อื่นใดที่ขึ้นต้นด้วย https:// → ใช้ตรงๆ
+         ถ้าไม่มีรูป ใช้ตัวอักษรแรกของชื่อรางวัลเป็น placeholder
+         ⚠️ ไฟล์ใน Drive ต้องตั้งเป็น "Anyone with the link" */
       let photoUrl = String(e.photo || '').trim();
-      if (photoUrl && !/^(https?:\/\/|data:|\/|images\/)/i.test(photoUrl)) {
-        photoUrl = 'images/hall/' + photoUrl;
+      if (photoUrl) {
+        /* Google Drive share/view URL → extract file ID */
+        const driveMatch = photoUrl.match(/(?:drive\.google\.com\/file\/d\/|drive\.google\.com\/open\?id=|drive\.google\.com\/uc\?(?:export=view&)?id=|drive\.google\.com\/thumbnail\?id=)([a-zA-Z0-9_-]+)/);
+        if (driveMatch) {
+          photoUrl = `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`;
+        } else if (/^[a-zA-Z0-9_-]{25,}$/.test(photoUrl)) {
+          /* Drive file ID เปล่าๆ */
+          photoUrl = `https://drive.google.com/thumbnail?id=${photoUrl}&sz=w1000`;
+        } else if (!/^(https?:\/\/|data:|\/|images\/)/i.test(photoUrl)) {
+          /* ชื่อไฟล์ใน repo */
+          photoUrl = 'images/hall/' + photoUrl;
+        }
       }
       const firstChar = String(e.award || e.name || '?').trim().charAt(0) || '?';
       const photoHtml = photoUrl

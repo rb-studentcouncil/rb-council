@@ -434,8 +434,15 @@
       }
       grid.innerHTML = top.map(e => {
         let photo = String(e.photo || '').trim();
-        if (photo && !/^(https?:\/\/|data:|\/|images\/)/i.test(photo)) {
-          photo = 'images/hall/' + photo;
+        if (photo) {
+          const driveMatch = photo.match(/(?:drive\.google\.com\/file\/d\/|drive\.google\.com\/open\?id=|drive\.google\.com\/uc\?(?:export=view&)?id=|drive\.google\.com\/thumbnail\?id=)([a-zA-Z0-9_-]+)/);
+          if (driveMatch) {
+            photo = `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`;
+          } else if (/^[a-zA-Z0-9_-]{25,}$/.test(photo)) {
+            photo = `https://drive.google.com/thumbnail?id=${photo}&sz=w1000`;
+          } else if (!/^(https?:\/\/|data:|\/|images\/)/i.test(photo)) {
+            photo = 'images/hall/' + photo;
+          }
         }
         const firstChar = String(e.award || e.name || '?').trim().charAt(0) || '?';
         const photoHtml = photo
