@@ -55,6 +55,29 @@
     .col-head { font-size:18px; margin-bottom:14px; }
   }
 
+  /* ===== Sub-filter ในแต่ละคอลัมน์ (ทั้งหมด / อนาคต / ผ่านมา) ===== */
+  .col-head-row {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; margin-bottom:16px; flex-wrap:wrap;
+  }
+  .col-head-row .col-head { margin-bottom:0; }
+  .sub-filter {
+    display:inline-flex; gap:4px;
+    background:var(--white); border:1px solid var(--line);
+    padding:3px; border-radius:999px;
+  }
+  .sub-filter-btn {
+    font-family:var(--head); font-size:12px; font-weight:600;
+    padding:6px 14px; border-radius:999px; border:0;
+    background:transparent; color:var(--ink); cursor:pointer;
+    transition:.15s; white-space:nowrap;
+  }
+  .sub-filter-btn:hover { color:var(--pink-deep); }
+  .sub-filter-btn.active {
+    background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+    color:#fff;
+  }
+
   /* ===== Notes section ===== */
   .notes-section {
     background:var(--pink-soft);
@@ -113,13 +136,27 @@
 
     <div class="grid grid-2">
       <div class="reveal is-active" id="colWrapTcas">
-        <h2 class="col-head">TCAS <span class="col-update" id="updateTcas"></span></h2>
+        <div class="col-head-row">
+          <h2 class="col-head">TCAS <span class="col-update" id="updateTcas"></span></h2>
+          <div class="sub-filter" data-col="tcas">
+            <button type="button" class="sub-filter-btn active" data-filter="all">ทั้งหมด</button>
+            <button type="button" class="sub-filter-btn" data-filter="future">อนาคต</button>
+            <button type="button" class="sub-filter-btn" data-filter="past">ผ่านมา</button>
+          </div>
+        </div>
         <div class="timeline" id="colTcas">
           <div class="empty-note">กำลังโหลด…</div>
         </div>
       </div>
       <div class="reveal" id="colWrapSchool">
-        <h2 class="col-head">🏫 กิจกรรมโรงเรียน <span class="col-update" id="updateSchool"></span></h2>
+        <div class="col-head-row">
+          <h2 class="col-head">🏫 กิจกรรมโรงเรียน <span class="col-update" id="updateSchool"></span></h2>
+          <div class="sub-filter" data-col="school">
+            <button type="button" class="sub-filter-btn active" data-filter="all">ทั้งหมด</button>
+            <button type="button" class="sub-filter-btn" data-filter="future">อนาคต</button>
+            <button type="button" class="sub-filter-btn" data-filter="past">ผ่านมา</button>
+          </div>
+        </div>
         <div class="timeline" id="colSchool">
           <div class="empty-note">กำลังโหลด…</div>
         </div>
@@ -412,38 +449,80 @@
     }).join('');
   }
 
+  /* ========= State per column ========= */
+  const colState = {
+    tcas:   { el: colTcas,   entries: [], filter: 'all', emptyMsg: 'ยังไม่ได้ตั้ง Google Sheet สำหรับ TCAS' },
+    school: { el: colSchool, entries: [], filter: 'all', emptyMsg: 'ยังไม่ได้ตั้ง Google Sheet สำหรับกิจกรรมโรงเรียน' }
+  };
+
+  /* กรอง entries ตาม filter mode */
+  function applyFilter(entries, mode) {
+    if (mode === 'all') return entries;
+    return entries.filter(e => {
+      const s = computeStatus(e);
+      const isPast = s.cls === 'past';
+      return mode === 'past' ? isPast : !isPast;
+    });
+  }
+
+  /* render ของแต่ละ column โดยใช้ filter ปัจจุบัน */
+  function refreshColumn(colKey) {
+    const st = colState[colKey];
+    if (!st.entries.length) {
+      st.el.innerHTML = `<div class="empty-note">${escapeHtml(st.emptyMsg)}</div>`;
+      return;
+    }
+    const filtered = applyFilter(st.entries, st.filter);
+    if (!filtered.length) {
+      const msg = st.filter === 'past' ? 'ยังไม่มีกิจกรรมที่ผ่านมา'
+                : st.filter === 'future' ? 'ยังไม่มีกิจกรรมที่กำลังจะมาถึง'
+                : 'ยังไม่มีกิจกรรม';
+      st.el.innerHTML = `<div class="empty-note">${escapeHtml(msg)}</div>`;
+      return;
+    }
+    renderColumn(st.el, filtered, 'ยังไม่มีกิจกรรม');
+  }
+
   /* โหลด 1 ชีตเข้าคอลัมน์ที่ระบุ */
-  function loadColumn(el, url, emptyMsg) {
+  function loadColumn(colKey, url) {
+    const st = colState[colKey];
     if (!url || !url.trim()) {
-      el.innerHTML = `<div class="empty-note">${escapeHtml(emptyMsg || 'ยังไม่ได้ตั้ง Google Sheet')}</div>`;
+      refreshColumn(colKey);
       return;
     }
     fetch(url)
       .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
       .then(text => {
-        const entries = csvToEntries(text);
-        if (!entries.length) {
-          el.innerHTML = '<div class="empty-note">ยังไม่มีกิจกรรม</div>';
-          return;
-        }
-        renderColumn(el, entries, 'ยังไม่มีกิจกรรม');
+        st.entries = csvToEntries(text);
+        refreshColumn(colKey);
       })
       .catch(err => {
-        el.innerHTML = `<div class="load-error"><b>โหลดข้อมูลไม่สำเร็จ</b>${escapeHtml(err.message)}</div>`;
+        st.el.innerHTML = `<div class="load-error"><b>โหลดข้อมูลไม่สำเร็จ</b>${escapeHtml(err.message)}</div>`;
       });
   }
 
-  loadColumn(colTcas,   TCAS_CSV_URL,   'ยังไม่ได้ตั้ง Google Sheet สำหรับ TCAS');
-  loadColumn(colSchool, SCHOOL_CSV_URL, 'ยังไม่ได้ตั้ง Google Sheet สำหรับกิจกรรมโรงเรียน');
+  loadColumn('tcas',   TCAS_CSV_URL);
+  loadColumn('school', SCHOOL_CSV_URL);
+
+  /* ========= Sub-filter ในแต่ละคอลัมน์ ========= */
+  document.querySelectorAll('.sub-filter').forEach(group => {
+    const colKey = group.dataset.col;
+    group.querySelectorAll('.sub-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('.sub-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        colState[colKey].filter = btn.dataset.filter;
+        refreshColumn(colKey);
+      });
+    });
+  });
 
   /* ========= Mobile tab switcher ========= */
   document.querySelectorAll('.cal-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.target;
-      /* update active tab */
       document.querySelectorAll('.cal-tab').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      /* update active column */
       document.querySelectorAll('.grid.grid-2 > .reveal').forEach(c => c.classList.remove('is-active'));
       document.getElementById(target).classList.add('is-active');
     });
