@@ -47,6 +47,18 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  /* Thai-friendly line breaking — ใช้ Thai dictionary ของ browser */
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-break: auto;
+  /* ไม่ตัดกลางคำ Thai compound */
+  word-spacing: 0.02em;
+}
+
+/* ข้อความ paragraph/description — บังคับ line-break แบบ Thai */
+p, .detail, .who, h1, h2, h3, h4 {
+  line-break: auto;
+  overflow-wrap: break-word;
 }
 
 a { color: inherit; text-decoration: none; }
