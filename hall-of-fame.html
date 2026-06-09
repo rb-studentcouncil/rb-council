@@ -189,6 +189,19 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  /* แบ่งคำไทยด้วย Intl.Segmenter แล้วใส่ <wbr> ที่ word boundary
+     ทำให้ browser ตัดบรรทัดที่ขอบคำจริง ไม่ตัดกลางคำ */
+  const _thSeg = (typeof Intl !== 'undefined' && Intl.Segmenter)
+    ? new Intl.Segmenter('th', { granularity: 'word' })
+    : null;
+  function escapeHtmlThai(s) {
+    const raw = String(s == null ? '' : s);
+    if (!raw || !_thSeg) return escapeHtml(raw);
+    /* ตัดคำแล้วต่อด้วย <wbr> ระหว่าง segment */
+    const segs = [..._thSeg.segment(raw)].map(seg => escapeHtml(seg.segment));
+    return segs.join('<wbr>');
+  }
+
   /* --- CSV parser: รองรับ comma และขึ้นบรรทัดในเครื่องหมายคำพูด --- */
   function parseCSV(text) {
     const rows = [];
@@ -301,12 +314,12 @@
         <article class="hall-card">
           <div class="hall-head">
             <span class="tag">${escapeHtml(e.category)}</span>
-            <h3>${escapeHtml(e.award)}</h3>
+            <h3>${escapeHtmlThai(e.award)}</h3>
           </div>
           <div class="hall-photo">${photoHtml}</div>
           <div class="hall-body">
             <div class="who">${who}</div>
-            ${e.detail ? `<div class="detail">${escapeHtml(e.detail)}</div>` : ''}
+            ${e.detail ? `<div class="detail">${escapeHtmlThai(e.detail)}</div>` : ''}
           </div>
           <div class="hall-foot">
             <span class="year">${e.year ? escapeHtml(e.year) : ''}</span>
