@@ -55,7 +55,10 @@
     .col-head { font-size:18px; margin-bottom:14px; }
   }
 
-  /* ===== Sub-filter ในแต่ละคอลัมน์ (ทั้งหมด / อนาคต / ผ่านมา) ===== */
+  /* ===== Sub-filter (ทั้งหมด / ผ่านมา) ===== */
+  .global-filter {
+    display:flex; justify-content:center; margin-bottom:28px;
+  }
   .col-head-row {
     display:flex; align-items:center; justify-content:space-between;
     gap:12px; margin-bottom:16px; flex-wrap:wrap;
@@ -76,6 +79,17 @@
   .sub-filter-btn.active {
     background:linear-gradient(135deg,var(--pink),var(--pink-deep));
     color:#fff;
+  }
+  /* ปุ่มดูเพิ่ม / ย่อ */
+  .show-more-btn {
+    margin-top:14px; width:100%;
+    font-family:var(--head); font-size:13px; font-weight:600;
+    padding:10px 16px; border-radius:12px;
+    border:1.5px dashed var(--lilac); background:transparent;
+    color:var(--pink-deep); cursor:pointer; transition:.18s;
+  }
+  .show-more-btn:hover {
+    background:var(--pink-soft); border-color:var(--pink); border-style:solid;
   }
 
   /* ===== Notes section ===== */
@@ -134,27 +148,23 @@
       <button class="cal-tab" data-target="colWrapSchool" type="button">🏫 โรงเรียน</button>
     </div>
 
+    <!-- Shared filter for both columns -->
+    <div class="global-filter reveal">
+      <div class="sub-filter" id="globalFilter">
+        <button type="button" class="sub-filter-btn active" data-filter="upcoming">ทั้งหมด</button>
+        <button type="button" class="sub-filter-btn" data-filter="past">ผ่านมา</button>
+      </div>
+    </div>
+
     <div class="grid grid-2">
       <div class="reveal is-active" id="colWrapTcas">
-        <div class="col-head-row">
-          <h2 class="col-head">TCAS <span class="col-update" id="updateTcas"></span></h2>
-          <div class="sub-filter" data-col="tcas">
-            <button type="button" class="sub-filter-btn active" data-filter="upcoming">ทั้งหมด</button>
-            <button type="button" class="sub-filter-btn" data-filter="past">ผ่านมา</button>
-          </div>
-        </div>
+        <h2 class="col-head">TCAS <span class="col-update" id="updateTcas"></span></h2>
         <div class="timeline" id="colTcas">
           <div class="empty-note">กำลังโหลด…</div>
         </div>
       </div>
       <div class="reveal" id="colWrapSchool">
-        <div class="col-head-row">
-          <h2 class="col-head">🏫 กิจกรรมโรงเรียน <span class="col-update" id="updateSchool"></span></h2>
-          <div class="sub-filter" data-col="school">
-            <button type="button" class="sub-filter-btn active" data-filter="upcoming">ทั้งหมด</button>
-            <button type="button" class="sub-filter-btn" data-filter="past">ผ่านมา</button>
-          </div>
-        </div>
+        <h2 class="col-head">🏫 กิจกรรมโรงเรียน <span class="col-update" id="updateSchool"></span></h2>
         <div class="timeline" id="colSchool">
           <div class="empty-note">กำลังโหลด…</div>
         </div>
@@ -455,10 +465,11 @@
     }).join('');
   }
 
-  /* ========= State per column ========= */
+  /* ========= State ========= */
+  let globalFilter = 'upcoming';  /* shared filter สำหรับทั้ง 2 คอลัมน์ */
   const colState = {
-    tcas:   { el: colTcas,   entries: [], filter: 'upcoming', emptyMsg: 'ยังไม่ได้ตั้ง Google Sheet สำหรับ TCAS' },
-    school: { el: colSchool, entries: [], filter: 'upcoming', emptyMsg: 'ยังไม่ได้ตั้ง Google Sheet สำหรับกิจกรรมโรงเรียน' }
+    tcas:   { el: colTcas,   entries: [], emptyMsg: 'ยังไม่ได้ตั้ง Google Sheet สำหรับ TCAS' },
+    school: { el: colSchool, entries: [], emptyMsg: 'ยังไม่ได้ตั้ง Google Sheet สำหรับกิจกรรมโรงเรียน' }
   };
 
   /* กรอง entries ตาม filter mode
@@ -472,22 +483,45 @@
     });
   }
 
-  /* render ของแต่ละ column โดยใช้ filter ปัจจุบัน */
+  /* render ของแต่ละ column โดยใช้ globalFilter
+     ถ้าเกิน 10 event → collapse ตัวเกิน + ปุ่ม "ดูเพิ่ม" */
+  const COLLAPSE_LIMIT = 10;
+  const expanded = { tcas: false, school: false };
+
   function refreshColumn(colKey) {
     const st = colState[colKey];
     if (!st.entries.length) {
       st.el.innerHTML = `<div class="empty-note">${escapeHtml(st.emptyMsg)}</div>`;
       return;
     }
-    const filtered = applyFilter(st.entries, st.filter);
+    const filtered = applyFilter(st.entries, globalFilter);
     if (!filtered.length) {
-      const msg = st.filter === 'past'
+      const msg = globalFilter === 'past'
         ? 'ยังไม่มีกิจกรรมที่ผ่านมา'
         : 'ยังไม่มีกิจกรรมในตอนนี้';
       st.el.innerHTML = `<div class="empty-note">${escapeHtml(msg)}</div>`;
       return;
     }
-    renderColumn(st.el, filtered, 'ยังไม่มีกิจกรรม');
+    /* collapse ถ้าเกิน limit และยังไม่ expand */
+    const total = filtered.length;
+    const showAll = expanded[colKey];
+    const list = (total > COLLAPSE_LIMIT && !showAll) ? filtered.slice(0, COLLAPSE_LIMIT) : filtered;
+    renderColumn(st.el, list, 'ยังไม่มีกิจกรรม');
+
+    /* ใส่ปุ่ม "ดูเพิ่ม" / "ย่อ" ถ้าจำเป็น */
+    if (total > COLLAPSE_LIMIT) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'show-more-btn';
+      btn.textContent = showAll
+        ? `ย่อกลับ`
+        : `ดูเพิ่มอีก ${total - COLLAPSE_LIMIT} รายการ →`;
+      btn.addEventListener('click', () => {
+        expanded[colKey] = !expanded[colKey];
+        refreshColumn(colKey);
+      });
+      st.el.appendChild(btn);
+    }
   }
 
   /* โหลด 1 ชีตเข้าคอลัมน์ที่ระบุ */
@@ -511,16 +545,17 @@
   loadColumn('tcas',   TCAS_CSV_URL);
   loadColumn('school', SCHOOL_CSV_URL);
 
-  /* ========= Sub-filter ในแต่ละคอลัมน์ ========= */
-  document.querySelectorAll('.sub-filter').forEach(group => {
-    const colKey = group.dataset.col;
-    group.querySelectorAll('.sub-filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        group.querySelectorAll('.sub-filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        colState[colKey].filter = btn.dataset.filter;
-        refreshColumn(colKey);
-      });
+  /* ========= Global filter (ใช้ร่วม TCAS + School) ========= */
+  document.querySelectorAll('#globalFilter .sub-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#globalFilter .sub-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      globalFilter = btn.dataset.filter;
+      /* reset expand state ตอนเปลี่ยน filter */
+      expanded.tcas = false;
+      expanded.school = false;
+      refreshColumn('tcas');
+      refreshColumn('school');
     });
   });
 
