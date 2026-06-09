@@ -189,17 +189,22 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  /* แบ่งคำไทยด้วย Intl.Segmenter แล้วใส่ <wbr> ที่ word boundary
-     ทำให้ browser ตัดบรรทัดที่ขอบคำจริง ไม่ตัดกลางคำ */
+  /* แบ่งคำไทยด้วย Intl.Segmenter แล้ว wrap แต่ละคำใน <span class="thw">
+     CSS .thw { white-space: nowrap } บังคับ browser ไม่ให้ตัดกลางคำ
+     ระหว่าง <span> เป็น break opportunity ปกติ → ขึ้นบรรทัดใหม่ที่ขอบคำได้ */
   const _thSeg = (typeof Intl !== 'undefined' && Intl.Segmenter)
     ? new Intl.Segmenter('th', { granularity: 'word' })
     : null;
   function escapeHtmlThai(s) {
     const raw = String(s == null ? '' : s);
     if (!raw || !_thSeg) return escapeHtml(raw);
-    /* ตัดคำแล้วต่อด้วย <wbr> ระหว่าง segment */
-    const segs = [..._thSeg.segment(raw)].map(seg => escapeHtml(seg.segment));
-    return segs.join('<wbr>');
+    return [..._thSeg.segment(raw)].map(seg => {
+      const text = escapeHtml(seg.segment);
+      /* เว้นวรรค/เครื่องหมาย — ไม่ต้องห่อ ใช้ตรงๆ */
+      if (!seg.isWordLike) return text;
+      /* คำจริง — ห่อให้ห้ามตัดกลาง */
+      return `<span class="thw">${text}</span>`;
+    }).join('');
   }
 
   /* --- CSV parser: รองรับ comma และขึ้นบรรทัดในเครื่องหมายคำพูด --- */

@@ -47,22 +47,14 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  /* Thai line-breaking ที่ดีขึ้น
-     keep-all = ไม่ตัดกลางคำไทย/CJK
-     overflow-wrap = ตัดได้ถ้าจำเป็น (overflow)
-     line-break: auto = ใช้ dictionary ของ browser */
-  word-break: keep-all;
   overflow-wrap: break-word;
-  line-break: auto;
   hyphens: none;
 }
 
-/* ข้อความ paragraph/description — ใช้ rule เดียวกัน */
-p, .detail, .who, h1, h2, h3, h4 {
-  word-break: keep-all;
-  overflow-wrap: break-word;
-  line-break: auto;
-  hyphens: none;
+/* Thai word wrapper — บังคับไม่ตัดกลางคำ
+   ใช้ร่วมกับ JS Intl.Segmenter ที่ห่อแต่ละคำใน <span class="thw"> */
+.thw {
+  white-space: nowrap;
 }
 
 a { color: inherit; text-decoration: none; }

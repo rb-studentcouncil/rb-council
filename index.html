@@ -180,14 +180,19 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
-  /* แบ่งคำไทยใส่ <wbr> เพื่อไม่ให้ตัดกลางคำ */
+  /* แบ่งคำไทย wrap ใน <span class="thw"> (white-space:nowrap)
+     บังคับไม่ตัดกลางคำ — ขึ้นบรรทัดใหม่ระหว่างคำเท่านั้น */
   const _thSeg = (typeof Intl !== 'undefined' && Intl.Segmenter)
     ? new Intl.Segmenter('th', { granularity: 'word' })
     : null;
   function escTh(s) {
     const raw = String(s == null ? '' : s);
     if (!raw || !_thSeg) return esc(raw);
-    return [..._thSeg.segment(raw)].map(seg => esc(seg.segment)).join('<wbr>');
+    return [..._thSeg.segment(raw)].map(seg => {
+      const text = esc(seg.segment);
+      if (!seg.isWordLike) return text;
+      return `<span class="thw">${text}</span>`;
+    }).join('');
   }
 
   function parseCSV(text) {
