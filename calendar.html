@@ -56,8 +56,15 @@
   }
 
   /* ===== Sub-filter (ทั้งหมด / ผ่านมา) ===== */
-  .global-filter {
-    display:flex; justify-content:center; margin-bottom:28px;
+  .hero-row {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:20px; flex-wrap:wrap;
+  }
+  .hero-row p { margin:0; }
+  @media (max-width:600px){
+    .hero-row { gap:12px; }
+    .hero-row .sub-filter { width:100%; }
+    .hero-row .sub-filter-btn { flex:1; }
   }
   .col-head-row {
     display:flex; align-items:center; justify-content:space-between;
@@ -136,7 +143,13 @@
   <div class="wrap">
     <div class="crumb reveal"><a href="/">หน้าแรก</a> / ปฏิทิน</div>
     <h1 class="reveal">ปฏิทิน</h1>
-    <p class="reveal">TCAS และกิจกรรมโรงเรียนที่ควรรู้</p>
+    <div class="hero-row reveal">
+      <p>TCAS และกิจกรรมโรงเรียนที่ควรรู้</p>
+      <div class="sub-filter" id="globalFilter">
+        <button type="button" class="sub-filter-btn active" data-filter="upcoming">ทั้งหมด</button>
+        <button type="button" class="sub-filter-btn" data-filter="past">ผ่านมา</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -146,14 +159,6 @@
     <div class="cal-tabs reveal" role="tablist">
       <button class="cal-tab active" data-target="colWrapTcas" type="button">TCAS</button>
       <button class="cal-tab" data-target="colWrapSchool" type="button">🏫 โรงเรียน</button>
-    </div>
-
-    <!-- Shared filter for both columns -->
-    <div class="global-filter reveal">
-      <div class="sub-filter" id="globalFilter">
-        <button type="button" class="sub-filter-btn active" data-filter="upcoming">ทั้งหมด</button>
-        <button type="button" class="sub-filter-btn" data-filter="past">ผ่านมา</button>
-      </div>
     </div>
 
     <div class="grid grid-2">
