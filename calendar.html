@@ -284,9 +284,17 @@
     let year;
     if (yearRaw) {
       const y = parseInt(yearRaw, 10);
-      if (y > 2400) year = y - 543;
-      else if (y < 100) year = 2000 + y;
-      else year = y;
+      if (y > 2400) {
+        year = y - 543;                    /* 4 หลัก พ.ศ. → ค.ศ. */
+      } else if (y > 1900) {
+        year = y;                          /* 4 หลัก ค.ศ. */
+      } else if (y < 100) {
+        /* 2 หลัก = พ.ศ. ย่อ → ค.ศ. (ในไทยใช้แบบนี้ เช่น "69" = 2569 BE = 2026 CE) */
+        const beCentury = Math.floor((new Date().getFullYear() + 543) / 100) * 100;
+        year = beCentury + y - 543;
+      } else {
+        year = y;
+      }
     } else if (fallbackYear !== undefined) {
       year = fallbackYear;
     } else {
