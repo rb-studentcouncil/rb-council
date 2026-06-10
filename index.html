@@ -408,8 +408,7 @@
         const { cls, label, range } = e.__s;
         const dateText = e.date || rangeToThai(range);
         return `
-          <a href="${e.link ? esc(e.link) : 'find-your-future.html'}"
-             ${e.link ? 'target="_blank" rel="noopener"' : ''}
+          <a href="/find-your-future#${encodeURIComponent(e.title)}"
              class="card live-card reveal in">
             <span class="tag">${esc(e.category || 'โอกาส')}</span>
             <h3>${escTh(e.title)}</h3>

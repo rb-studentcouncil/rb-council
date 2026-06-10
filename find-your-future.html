@@ -469,11 +469,27 @@
         allEntries = entries;
         buildFilters();
         renderList();
+        /* ถ้า URL มี #hash → เปิด modal ของอันที่ตรงกับ title ทันที */
+        openFromHash();
       })
       .catch(err => showError('ดึง Google Sheets ไม่ได้: ' + err.message));
   } else {
     showEmpty();
   }
+
+  /* เปิด modal จาก URL hash — รองรับการลิงก์จากหน้าแรก */
+  function openFromHash() {
+    const hash = decodeURIComponent((location.hash || '').slice(1)).trim();
+    if (!hash) return;
+    const match = allEntries.find(e => e.title === hash);
+    if (match) {
+      /* คำนวณ status ก่อน เพื่อให้ modal มีข้อมูลครบ */
+      match.__status = computeStatus(match);
+      openModal(match);
+    }
+  }
+  /* ถ้า user กด back/forward เปลี่ยน hash ก็เปิด/ปิด modal ตาม */
+  window.addEventListener('hashchange', openFromHash);
 
   /* ========= Modal: คลิกการ์ดเปิดรายละเอียดเต็ม ========= */
   const modalBg = document.getElementById('modalBg');
