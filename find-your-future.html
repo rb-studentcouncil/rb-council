@@ -101,18 +101,18 @@
     margin-bottom:20px;
   }
   .modal-meta-item {
-    display:flex; align-items:flex-start; gap:14px;
-    font-size:14px; line-height:1.6;
+    display:grid; grid-template-columns:96px 1fr; gap:14px;
+    align-items:baseline; font-size:14px; line-height:1.7;
   }
   .modal-meta-item .label {
     font-family:var(--head); font-weight:600;
-    padding:4px 12px; border-radius:999px; font-size:12px;
+    padding:4px 12px; border-radius:999px; font-size:12px; line-height:1.5;
     color:var(--pink-deep); background:var(--pink-soft);
-    white-space:nowrap; flex-shrink:0; margin-top:2px;
+    white-space:nowrap; text-align:center;
   }
   .modal-meta-item.fee .label { color:var(--gold-deep); background:#FFF1DC; }
   .modal-meta-item.date .label { color:var(--charcoal); background:var(--line); }
-  .modal-meta-item .val { flex:1; color:var(--ink); }
+  .modal-meta-item .val { color:var(--ink); min-width:0; }
   /* bullet list ใน modal */
   .opp-meta-list { list-style:none; padding:0; margin:0; }
   .opp-meta-list li { position:relative; padding-left:14px; }
