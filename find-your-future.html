@@ -34,9 +34,35 @@
     background:var(--pink-soft); padding:4px 10px; border-radius:999px; margin-bottom:8px;
   }
   .opp-card h3 { font-family:var(--head); font-weight:700; font-size:18px; color:var(--charcoal); margin-bottom:6px; line-height:1.35; }
-  .opp-card .detail { font-size:14px; color:var(--grey); margin-bottom:10px; line-height:1.6; }
-  .opp-card .opp-link { display:inline-flex; align-items:center; gap:6px; font-family:var(--head); font-size:13px; font-weight:600; color:var(--pink-deep); }
-  .opp-card .opp-link:hover { text-decoration:underline; }
+  .opp-card .detail { font-size:14px; color:var(--grey); margin-bottom:12px; line-height:1.6; }
+
+  /* Meta items (คุณสมบัติ / ค่าใช้จ่าย) */
+  .opp-meta { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .opp-meta-item {
+    display:flex; align-items:flex-start; gap:8px;
+    font-size:13px; color:var(--ink); line-height:1.5;
+  }
+  .opp-meta-item .label {
+    font-family:var(--head); font-weight:600; color:var(--pink-deep);
+    background:var(--pink-soft); padding:2px 10px; border-radius:999px;
+    font-size:11px; letter-spacing:.3px; white-space:nowrap; flex-shrink:0;
+    margin-top:2px;
+  }
+  .opp-meta-item.fee .label { color:var(--gold-deep); background:#FFF1DC; }
+  .opp-meta-item .val { flex:1; min-width:0; }
+
+  /* ปุ่มเปิดลิงก์ */
+  .opp-card .opp-link {
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--head); font-size:13px; font-weight:600;
+    color:#fff; background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+    padding:9px 18px; border-radius:999px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .opp-card .opp-link:hover {
+    transform:translateY(-1px);
+    box-shadow:0 8px 16px -6px rgba(182,36,119,.45);
+  }
   .opp-right {
     display:flex; flex-direction:column; align-items:flex-end; gap:6px;
     text-align:right; white-space:nowrap;
@@ -314,16 +340,26 @@
     list.innerHTML = sorted.map(e => {
       const { cls, label, range } = e.__status;
       const linkHtml = e.link
-        ? `<a class="opp-link" href="${escapeHtml(e.link)}" target="_blank" rel="noopener">เปิดลิงก์ →</a>`
+        ? `<a class="opp-link" href="${escapeHtml(e.link)}" target="_blank" rel="noopener">สมัคร / ดูรายละเอียด →</a>`
         : '';
       /* ถ้าไม่มี date (ไทย) ให้สร้างจาก date_iso แทน */
       const dateText = e.date || rangeToThai(range);
+
+      /* คุณสมบัติ + ค่าใช้จ่าย — รองรับชื่อคอลัมน์หลายแบบ */
+      const req  = e.requirement || e.requirements || e.qualification || e.qualifications || e['คุณสมบัติ'] || '';
+      const fee  = e.fee || e.cost || e.price || e['ค่าใช้จ่าย'] || '';
+      const metaItems = [];
+      if (req)  metaItems.push(`<div class="opp-meta-item"><span class="label">คุณสมบัติ</span><span class="val">${escapeHtml(req)}</span></div>`);
+      if (fee)  metaItems.push(`<div class="opp-meta-item fee"><span class="label">ค่าใช้จ่าย</span><span class="val">${escapeHtml(fee)}</span></div>`);
+      const metaHtml = metaItems.length ? `<div class="opp-meta">${metaItems.join('')}</div>` : '';
+
       return `
         <article class="opp-card ${cls === 'past' ? 'is-past' : ''}">
           <div class="opp-main">
             ${e.category ? `<span class="tag">${escapeHtml(e.category)}</span>` : ''}
             <h3>${escapeHtml(e.title)}</h3>
             ${e.detail ? `<div class="detail">${escapeHtml(e.detail)}</div>` : ''}
+            ${metaHtml}
             ${linkHtml}
           </div>
           <div class="opp-right">
