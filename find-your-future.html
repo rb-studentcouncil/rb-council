@@ -18,78 +18,127 @@
   .filter-btn:hover { border-color:var(--pink); color:var(--pink-deep); }
   .filter-btn.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; border-color:transparent; box-shadow:var(--shadow-sm); }
 
-  .opp-list { display:flex; flex-direction:column; gap:14px; }
+  /* ====== Compact list ====== */
+  .opp-list { display:flex; flex-direction:column; gap:12px; }
   .opp-card {
-    position:relative;
     background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
-    padding:20px 22px; box-shadow:var(--shadow-sm);
+    padding:18px 22px; box-shadow:var(--shadow-sm);
     transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-    display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start;
+    display:grid; grid-template-columns:1fr auto auto; gap:18px; align-items:center;
+    cursor:pointer;
   }
-  .opp-card:hover { transform:translateY(-3px); box-shadow:var(--shadow); border-color:var(--pink-soft); }
+  .opp-card:hover { transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--pink-soft); }
   .opp-main { min-width:0; }
   .opp-card .tag {
     display:inline-block; font-family:var(--head); font-size:11px; font-weight:600;
     letter-spacing:.5px; text-transform:uppercase; color:var(--pink-deep);
-    background:var(--pink-soft); padding:4px 10px; border-radius:999px; margin-bottom:8px;
+    background:var(--pink-soft); padding:4px 10px; border-radius:999px; margin-bottom:6px;
   }
-  .opp-card h3 { font-family:var(--head); font-weight:700; font-size:18px; color:var(--charcoal); margin-bottom:6px; line-height:1.35; }
-  .opp-card .detail { font-size:14px; color:var(--grey); margin-bottom:12px; line-height:1.6; }
+  .opp-card h3 { font-family:var(--head); font-weight:700; font-size:16px; color:var(--charcoal); line-height:1.35; }
+  .opp-meta-col {
+    display:flex; flex-direction:column; align-items:flex-end; gap:5px;
+    text-align:right; white-space:nowrap;
+  }
+  .opp-date { font-size:13px; color:var(--grey); }
+  .pill-when { display:inline-block; font-family:var(--head); font-size:12px; font-weight:600; color:var(--pink-deep); background:var(--pink-soft); padding:3px 10px; border-radius:999px; }
+  .pill-when.soon { color:var(--gold-deep); background:#FFF1DC; }
+  .pill-when.past { color:var(--grey); background:var(--line); }
+  .opp-view-btn {
+    font-family:var(--head); font-size:13px; font-weight:600;
+    padding:9px 20px; border-radius:999px; border:0;
+    color:#fff; background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+    cursor:pointer; transition:.15s; white-space:nowrap;
+  }
+  .opp-view-btn:hover { transform:translateY(-1px); box-shadow:0 8px 16px -6px rgba(182,36,119,.45); }
 
-  /* Meta items (คุณสมบัติ / ค่าใช้จ่าย) */
-  .opp-meta { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
-  .opp-meta-item {
-    display:flex; align-items:flex-start; gap:10px;
-    font-size:13px; color:var(--ink); line-height:1.55;
+  @media (max-width:700px){
+    .opp-card { grid-template-columns:1fr; gap:10px; padding:16px 18px; }
+    .opp-meta-col { flex-direction:row; align-items:center; justify-content:space-between; text-align:left; }
+    .opp-view-btn { width:100%; text-align:center; padding:11px 16px; }
   }
-  .opp-meta-item .label {
-    font-family:var(--head); font-weight:600; color:var(--pink-deep);
-    background:var(--pink-soft); padding:2px 10px; border-radius:999px;
-    font-size:11px; letter-spacing:.3px; white-space:nowrap; flex-shrink:0;
-    margin-top:2px;
+
+  /* ====== Modal ====== */
+  .modal-bg {
+    position:fixed; inset:0; background:rgba(36,27,51,.6);
+    display:none; align-items:flex-start; justify-content:center;
+    padding:40px 20px; z-index:200; overflow-y:auto;
+    backdrop-filter:blur(4px);
   }
-  .opp-meta-item.fee .label { color:var(--gold-deep); background:#FFF1DC; }
-  .opp-meta-item .val { flex:1; min-width:0; }
-  /* รายการแยกบรรทัด (bullet list) */
+  .modal-bg.open { display:flex; }
+  .modal {
+    background:var(--white); border-radius:var(--radius);
+    max-width:640px; width:100%; padding:32px 36px;
+    box-shadow:0 30px 80px -20px rgba(0,0,0,.4);
+    position:relative; animation:modalIn .25s ease;
+  }
+  @keyframes modalIn {
+    from { opacity:0; transform:translateY(20px) scale(.97); }
+    to   { opacity:1; transform:none; }
+  }
+  .modal-close {
+    position:absolute; top:18px; right:18px;
+    width:36px; height:36px; border-radius:50%; border:0;
+    background:var(--line); color:var(--ink);
+    font-size:18px; line-height:1; cursor:pointer; transition:.15s;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover { background:var(--pink-soft); color:var(--pink-deep); }
+  .modal .tag {
+    display:inline-block; font-family:var(--head); font-size:11px; font-weight:600;
+    letter-spacing:.5px; text-transform:uppercase; color:var(--pink-deep);
+    background:var(--pink-soft); padding:4px 12px; border-radius:999px; margin-bottom:14px;
+  }
+  .modal h2 {
+    font-family:var(--head); font-weight:700; font-size:24px;
+    color:var(--charcoal); margin-bottom:14px; line-height:1.3;
+  }
+  .modal .detail {
+    font-size:15px; color:var(--ink); line-height:1.7; margin-bottom:20px;
+  }
+  .modal .modal-meta {
+    display:flex; flex-direction:column; gap:14px;
+    padding:18px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    margin-bottom:20px;
+  }
+  .modal-meta-item {
+    display:flex; align-items:flex-start; gap:14px;
+    font-size:14px; line-height:1.6;
+  }
+  .modal-meta-item .label {
+    font-family:var(--head); font-weight:600;
+    padding:4px 12px; border-radius:999px; font-size:12px;
+    color:var(--pink-deep); background:var(--pink-soft);
+    white-space:nowrap; flex-shrink:0; margin-top:2px;
+  }
+  .modal-meta-item.fee .label { color:var(--gold-deep); background:#FFF1DC; }
+  .modal-meta-item.date .label { color:var(--charcoal); background:var(--line); }
+  .modal-meta-item .val { flex:1; color:var(--ink); }
+  /* bullet list ใน modal */
   .opp-meta-list { list-style:none; padding:0; margin:0; }
   .opp-meta-list li { position:relative; padding-left:14px; }
   .opp-meta-list li::before {
     content:'•'; position:absolute; left:2px; top:0;
     color:var(--pink-deep); font-weight:bold;
   }
-  .opp-meta-item.fee .opp-meta-list li::before { color:var(--gold-deep); }
-  .opp-meta-list li + li { margin-top:3px; }
-
-  /* ปุ่มเปิดลิงก์ */
-  .opp-card .opp-link {
-    display:inline-flex; align-items:center; gap:6px;
-    font-family:var(--head); font-size:13px; font-weight:600;
+  .modal-meta-item.fee .opp-meta-list li::before { color:var(--gold-deep); }
+  .opp-meta-list li + li { margin-top:4px; }
+  .modal-action {
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--head); font-weight:600; font-size:15px;
     color:#fff; background:linear-gradient(135deg,var(--pink),var(--pink-deep));
-    padding:9px 18px; border-radius:999px;
-    transition:transform .15s ease, box-shadow .15s ease;
+    padding:13px 26px; border-radius:999px;
+    box-shadow:var(--shadow-sm); transition:.15s;
   }
-  .opp-card .opp-link:hover {
-    transform:translateY(-1px);
-    box-shadow:0 8px 16px -6px rgba(182,36,119,.45);
+  .modal-action:hover { transform:translateY(-2px); box-shadow:0 12px 24px -8px rgba(182,36,119,.5); }
+
+  @media (max-width:600px){
+    .modal { padding:24px 22px; }
+    .modal h2 { font-size:20px; }
   }
-  .opp-right {
-    display:flex; flex-direction:column; align-items:flex-end; gap:6px;
-    text-align:right; white-space:nowrap;
-  }
-  .pill-when { display:inline-block; font-family:var(--head); font-size:12px; font-weight:600; color:var(--pink-deep); background:var(--pink-soft); padding:3px 10px; border-radius:999px; }
-  .pill-when.soon { color:var(--gold-deep); background:#FFF1DC; }
-  .pill-when.past { color:var(--grey); background:var(--line); }
-  .opp-date { font-size:13px; color:var(--grey); }
 
   .empty-note { color:var(--grey); font-size:15px; padding:40px 0; text-align:center; }
   .load-error { background:#FFF1DC; border:1px solid #F0CF94; border-radius:var(--radius); padding:18px 22px; color:var(--gold-deep); font-size:14px; }
   .load-error b { display:block; margin-bottom:4px; color:var(--charcoal); font-family:var(--head); }
-
-  @media (max-width:600px){
-    .opp-card { grid-template-columns:1fr; padding:16px 18px; }
-    .opp-right { align-items:flex-start; text-align:left; }
-    .opp-card h3 { font-size:16px; }
-  }
 </style>
 </head>
 <body>
@@ -124,6 +173,11 @@
     </div>
   </div>
 </section>
+
+<!-- Modal for full detail -->
+<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true">
+  <div class="modal" id="modalBody" role="document"></div>
+</div>
 
 <footer class="footer">
   <div class="wrap">
@@ -356,37 +410,25 @@
       return;
     }
 
-    list.innerHTML = sorted.map(e => {
+    list.innerHTML = sorted.map((e, idx) => {
       const { cls, label, range } = e.__status;
-      const linkHtml = e.link
-        ? `<a class="opp-link" href="${escapeHtml(e.link)}" target="_blank" rel="noopener">สมัคร / ดูรายละเอียด →</a>`
-        : '';
-      /* ถ้าไม่มี date (ไทย) ให้สร้างจาก date_iso แทน */
       const dateText = e.date || rangeToThai(range);
-
-      /* คุณสมบัติ + ค่าใช้จ่าย — รองรับชื่อคอลัมน์หลายแบบ */
-      const req  = e.requirement || e.requirements || e.qualification || e.qualifications || e['คุณสมบัติ'] || '';
-      const fee  = e.fee || e.cost || e.price || e['ค่าใช้จ่าย'] || '';
-      const metaItems = [];
-      if (req)  metaItems.push(`<div class="opp-meta-item"><span class="label">คุณสมบัติ</span><div class="val">${formatMultiline(req)}</div></div>`);
-      if (fee)  metaItems.push(`<div class="opp-meta-item fee"><span class="label">ค่าใช้จ่าย</span><div class="val">${formatMultiline(fee)}</div></div>`);
-      const metaHtml = metaItems.length ? `<div class="opp-meta">${metaItems.join('')}</div>` : '';
-
       return `
-        <article class="opp-card ${cls === 'past' ? 'is-past' : ''}">
+        <article class="opp-card ${cls === 'past' ? 'is-past' : ''}" data-idx="${idx}" tabindex="0" role="button" aria-label="ดูรายละเอียด ${escapeHtml(e.title)}">
           <div class="opp-main">
             ${e.category ? `<span class="tag">${escapeHtml(e.category)}</span>` : ''}
             <h3>${escapeHtml(e.title)}</h3>
-            ${e.detail ? `<div class="detail">${escapeHtml(e.detail)}</div>` : ''}
-            ${metaHtml}
-            ${linkHtml}
           </div>
-          <div class="opp-right">
+          <div class="opp-meta-col">
             <span class="pill-when ${cls}">${escapeHtml(label)}</span>
             ${dateText ? `<div class="opp-date">${escapeHtml(dateText)}</div>` : ''}
           </div>
+          <button type="button" class="opp-view-btn">ดูรายละเอียด →</button>
         </article>`;
     }).join('');
+
+    /* เก็บ sorted list ไว้ให้ modal ใช้ */
+    window._currentEntries = sorted;
   }
 
   function buildFilters() {
@@ -432,6 +474,71 @@
   } else {
     showEmpty();
   }
+
+  /* ========= Modal: คลิกการ์ดเปิดรายละเอียดเต็ม ========= */
+  const modalBg = document.getElementById('modalBg');
+  const modalBody = document.getElementById('modalBody');
+
+  function openModal(e) {
+    const { cls, label, range } = e.__status || {};
+    const dateText = e.date || rangeToThai(range);
+    const req = e.requirement || e.requirements || e.qualification || e.qualifications || e['คุณสมบัติ'] || '';
+    const fee = e.fee || e.cost || e.price || e['ค่าใช้จ่าย'] || '';
+
+    const metaItems = [];
+    if (dateText || label) {
+      const dateBits = [];
+      if (label) dateBits.push(`<span class="pill-when ${cls||''}">${escapeHtml(label)}</span>`);
+      if (dateText) dateBits.push(`<span>${escapeHtml(dateText)}</span>`);
+      metaItems.push(`<div class="modal-meta-item date"><span class="label">วันที่</span><div class="val" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">${dateBits.join('')}</div></div>`);
+    }
+    if (req) metaItems.push(`<div class="modal-meta-item"><span class="label">คุณสมบัติ</span><div class="val">${formatMultiline(req)}</div></div>`);
+    if (fee) metaItems.push(`<div class="modal-meta-item fee"><span class="label">ค่าใช้จ่าย</span><div class="val">${formatMultiline(fee)}</div></div>`);
+
+    const actionHtml = e.link
+      ? `<a class="modal-action" href="${escapeHtml(e.link)}" target="_blank" rel="noopener">สมัคร / ดูรายละเอียด →</a>`
+      : '';
+
+    modalBody.innerHTML = `
+      <button class="modal-close" type="button" aria-label="ปิด">×</button>
+      ${e.category ? `<span class="tag">${escapeHtml(e.category)}</span>` : ''}
+      <h2>${escapeHtml(e.title)}</h2>
+      ${e.detail ? `<div class="detail">${escapeHtml(e.detail)}</div>` : ''}
+      ${metaItems.length ? `<div class="modal-meta">${metaItems.join('')}</div>` : ''}
+      ${actionHtml}
+    `;
+    modalBg.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    modalBody.querySelector('.modal-close').addEventListener('click', closeModal);
+  }
+  function closeModal() {
+    modalBg.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  modalBg.addEventListener('click', (ev) => {
+    if (ev.target === modalBg) closeModal();
+  });
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape' && modalBg.classList.contains('open')) closeModal();
+  });
+
+  /* event delegation — กดที่ card หรือ ปุ่ม */
+  list.addEventListener('click', (ev) => {
+    const card = ev.target.closest('.opp-card');
+    if (!card) return;
+    const idx = +card.dataset.idx;
+    const e = (window._currentEntries || [])[idx];
+    if (e) openModal(e);
+  });
+  list.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+    const card = ev.target.closest('.opp-card');
+    if (!card) return;
+    ev.preventDefault();
+    const idx = +card.dataset.idx;
+    const e = (window._currentEntries || [])[idx];
+    if (e) openModal(e);
+  });
 })();
 </script>
 </body>
