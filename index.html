@@ -413,7 +413,6 @@
              class="card live-card reveal in">
             <span class="tag">${esc(e.category || 'โอกาส')}</span>
             <h3>${escTh(e.title)}</h3>
-            ${e.detail ? `<p>${escTh(e.detail)}</p>` : ''}
             <div class="meta-row">
               <span class="pill-when ${cls}">${esc(label)}</span>
               ${dateText ? `<span class="meta-date">${esc(dateText)}</span>` : ''}
