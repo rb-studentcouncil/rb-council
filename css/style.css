@@ -101,14 +101,15 @@ img { max-width: 100%; display: block; }
 }
 /* ซ่อนตัวอักษร "RB" ที่อยู่ใน div แต่ยังให้ screen reader อ่านได้ */
 .brand-logo { font-size: 0; color: transparent; }
-.brand-text b { font-family: var(--head); font-weight: 800; font-size: 16px; color: var(--charcoal); display: block; line-height: 1.15; }
-.brand-text span { font-size: 11px; color: var(--grey); letter-spacing: 1px; text-transform: uppercase; }
+.brand-text b { font-family: var(--head); font-weight: 800; font-size: 16px; color: var(--charcoal); display: block; line-height: 1.15; white-space: nowrap; }
+.brand-text span { font-size: 11px; color: var(--grey); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
 
 .nav-links { display: flex; align-items: center; gap: 4px; }
 .nav-links a {
   font-family: var(--head); font-size: 14px; font-weight: 500;
   padding: 9px 14px; border-radius: 10px; color: var(--ink);
   transition: all .18s ease;
+  white-space: nowrap;
 }
 .nav-links a:hover { background: var(--pink-soft); color: var(--pink-deep); }
 .nav-links a.active { background: var(--pink); color: #fff; }
