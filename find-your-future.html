@@ -37,10 +37,10 @@
   .opp-card .detail { font-size:14px; color:var(--grey); margin-bottom:12px; line-height:1.6; }
 
   /* Meta items (คุณสมบัติ / ค่าใช้จ่าย) */
-  .opp-meta { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .opp-meta { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
   .opp-meta-item {
-    display:flex; align-items:flex-start; gap:8px;
-    font-size:13px; color:var(--ink); line-height:1.5;
+    display:flex; align-items:flex-start; gap:10px;
+    font-size:13px; color:var(--ink); line-height:1.55;
   }
   .opp-meta-item .label {
     font-family:var(--head); font-weight:600; color:var(--pink-deep);
@@ -50,6 +50,15 @@
   }
   .opp-meta-item.fee .label { color:var(--gold-deep); background:#FFF1DC; }
   .opp-meta-item .val { flex:1; min-width:0; }
+  /* รายการแยกบรรทัด (bullet list) */
+  .opp-meta-list { list-style:none; padding:0; margin:0; }
+  .opp-meta-list li { position:relative; padding-left:14px; }
+  .opp-meta-list li::before {
+    content:'•'; position:absolute; left:2px; top:0;
+    color:var(--pink-deep); font-weight:bold;
+  }
+  .opp-meta-item.fee .opp-meta-list li::before { color:var(--gold-deep); }
+  .opp-meta-list li + li { margin-top:3px; }
 
   /* ปุ่มเปิดลิงก์ */
   .opp-card .opp-link {
@@ -326,6 +335,16 @@
       }).map(x => ({ ...x.e, __status: x.s }));
   }
 
+  /* แปลงข้อความที่มีหลายบรรทัด/separator → bullet list HTML
+     รองรับการแบ่งด้วย: newline, ; • · | หรือ Alt+Enter ใน Google Sheets */
+  function formatMultiline(text) {
+    const raw = String(text || '').trim();
+    if (!raw) return '';
+    const items = raw.split(/[\n\r;•·|]+/).map(s => s.trim()).filter(Boolean);
+    if (items.length <= 1) return escapeHtml(items[0] || raw);
+    return `<ul class="opp-meta-list">${items.map(it => `<li>${escapeHtml(it)}</li>`).join('')}</ul>`;
+  }
+
   function renderList() {
     const filtered = activeCat === 'ทั้งหมด'
       ? allEntries
@@ -349,8 +368,8 @@
       const req  = e.requirement || e.requirements || e.qualification || e.qualifications || e['คุณสมบัติ'] || '';
       const fee  = e.fee || e.cost || e.price || e['ค่าใช้จ่าย'] || '';
       const metaItems = [];
-      if (req)  metaItems.push(`<div class="opp-meta-item"><span class="label">คุณสมบัติ</span><span class="val">${escapeHtml(req)}</span></div>`);
-      if (fee)  metaItems.push(`<div class="opp-meta-item fee"><span class="label">ค่าใช้จ่าย</span><span class="val">${escapeHtml(fee)}</span></div>`);
+      if (req)  metaItems.push(`<div class="opp-meta-item"><span class="label">คุณสมบัติ</span><div class="val">${formatMultiline(req)}</div></div>`);
+      if (fee)  metaItems.push(`<div class="opp-meta-item fee"><span class="label">ค่าใช้จ่าย</span><div class="val">${formatMultiline(fee)}</div></div>`);
       const metaHtml = metaItems.length ? `<div class="opp-meta">${metaItems.join('')}</div>` : '';
 
       return `
